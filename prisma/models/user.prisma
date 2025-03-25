@@ -1,0 +1,54 @@
+model User {
+  id                     Int                   @id @default(autoincrement())
+  username               String                @unique
+  email                  String                @unique
+  passwordHash           String
+  avatarUrl              String?
+  status                 UserStatus            @default(OFFLINE)
+  createdAt              DateTime              @default(now())
+  lastLogin              DateTime?
+  
+  authentication         Authentication?
+  stats                  UserStats?
+  sentMessages           ChatMessage[]         @relation("SenderRelation")
+  receivedMessages       ChatMessage[]         @relation("ReceiverRelation")
+  participatedMatches    MatchParticipant[]
+  participatedTournaments TournamentParticipant[]
+  createdTournaments     Tournament[]          @relation("TournamentCreator")
+  friendshipsInitiated   Friendship[]          @relation("FriendshipInitiator")
+  friendshipsReceived    Friendship[]          @relation("FriendshipReceiver")
+  blockedUsers           BlockedUser[]         @relation("UserWhoBlocked")
+  blockedByUsers         BlockedUser[]         @relation("BlockedUser")
+  sessions               Session[]
+}
+
+model Authentication {
+  id          Int     @id @default(autoincrement())
+  userId      Int     @unique
+  googleId    String? @unique
+  tfaEnabled  Boolean @default(false)
+  tfaSecret   String?
+  
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserStats {
+  id          Int     @id @default(autoincrement())
+  userId      Int     @unique
+  wins        Int     @default(0)
+  losses      Int     @default(0)
+  totalPoints Int     @default(0)
+  
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  token       String
+  expiresAt   DateTime
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

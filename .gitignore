@@ -1,7 +1,56 @@
-# .gitignore
+# Dependency directories
 node_modules/
+npm-debug.log
+
+# TypeScript output
+dist/
+build/
+
+# Environment variables
 .env
-*.sqlite
-*.sqlite-journal
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
 .DS_Store
-ssl/*.pem
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Coverage directory
+coverage/
+
+# SQLite database files
+data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Prisma
+migrations/
+*.db-journal
+
+# Debug files
+.pnp.*
+.pnp.js
+
+# Temp files
+.temp/
+.tmp/
+tmp/
+
+# Build artifacts
+.turbo
+
+# Swagger generated docs
+swagger-static/
+
+# Cache
+.npm
+.eslintcache

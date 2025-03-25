@@ -1,0 +1,36 @@
+model Friendship {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  friendId  Int
+  status    FriendshipStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  
+  user      User    @relation("FriendshipInitiator", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User    @relation("FriendshipReceiver", fields: [friendId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, friendId])
+}
+
+model ChatMessage {
+  id          Int      @id @default(autoincrement())
+  senderId    Int
+  receiverId  Int
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  sender      User     @relation("SenderRelation", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceiverRelation", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model BlockedUser {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  blockedId   Int
+  blockedAt   DateTime @default(now())
+  
+  user        User     @relation("UserWhoBlocked", fields: [userId], references: [id], onDelete: Cascade)
+  blocked     User     @relation("BlockedUser", fields: [blockedId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, blockedId])
+}
