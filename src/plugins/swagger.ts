@@ -9,7 +9,7 @@ export default fastifyPlugin(async (fastify: FastifyInstance) => {
       info: {
         title: 'ft_transcendence 스웨거',
         description: '탁구 게임의 사용자, 매치, 토너먼트 관리를 위한 API',
-        version: '1.0.0'
+        version: '1.0.0',
       },
       servers: [
         {

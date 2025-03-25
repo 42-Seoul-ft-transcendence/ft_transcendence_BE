@@ -11,7 +11,10 @@
     "generate-schema": "node --loader ts-node/esm scripts/generate-prisma-schema.ts",
     "prisma:generate": "npm run generate-schema && prisma generate",
     "prisma:migrate": "npm run generate-schema && prisma migrate dev",
-    "prisma:studio": "npm run generate-schema && prisma studio"
+    "prisma:studio": "npm run generate-schema && prisma studio",
+    "lint": "eslint 'src/**/*.{ts,js}'",
+    "format": "prettier --write 'src/**/*.{ts,js}'",
+    "format:check": "prettier --check 'src/**/*.{ts,js}'"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +29,13 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.13",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.5",
     "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
     "prisma": "^6.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
