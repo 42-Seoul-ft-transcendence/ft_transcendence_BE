@@ -1,5 +1,7 @@
 import Fastify from 'fastify';
 import swagger from './plugins/swagger.js';
+import prismaPlugin from './plugins/prismaPlugin.js';
+import authRoute from './routes/auth.js';
 
 const fastify = Fastify({
   logger: true,
@@ -7,6 +9,8 @@ const fastify = Fastify({
 
 // Swagger 플러그인 등록
 await fastify.register(swagger);
+await fastify.register(prismaPlugin); // <-- 이게 먼저여도 괜찮지만
+await fastify.register(authRoute); // 이건 반드시 등록되어야 함!
 
 // health check api
 fastify.get('/ping', async (request, reply) => {
