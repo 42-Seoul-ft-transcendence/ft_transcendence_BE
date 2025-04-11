@@ -2,7 +2,7 @@ import fp from 'fastify-plugin';
 import { FastifyPluginCallback } from 'fastify';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = 'your_jwt_secret'; // 임시
+const JWT_SECRET = 'your_jwt_secret';
 
 interface JwtPayload {
   userId: number; // 토큰에 넣을 값
@@ -10,19 +10,19 @@ interface JwtPayload {
   exp?: number; // expiration
 }
 
-/*
-  JWT 인증 필터 플러그인
-  - 토큰이 유효하지 않으면 401 응답
-  - 유효하면 request.user 에 userId 저장
-*/
 const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
   // request.user 라는 프로퍼티를 추가해줍니다.
   fastify.decorateRequest('user', undefined);
 
   fastify.addHook('onRequest', async (request, reply) => {
     // 1) 인증이 필요없는 path 예외 처리
-    if (request.url.startsWith('/ping') || request.url.startsWith('/auth/google')) {
-      return; // 인증 검사를 통과시킴
+    if (
+      request.url.startsWith('/ping') ||
+      request.url.startsWith('/auth/google') ||
+      request.url.startsWith('/documentation') ||
+      request.url.startsWith('/documentation/json')
+    ) {
+      return;
     }
 
     // 2) Authorization 헤더 확인
