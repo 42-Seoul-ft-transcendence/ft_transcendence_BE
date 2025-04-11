@@ -1,40 +1,14 @@
 import { FastifyPluginAsync } from 'fastify';
 import fetch from 'node-fetch';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
-
-const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
-
-interface GoogleUser {
-  sub: string;
-  email: string;
-  name: string;
-  picture: string;
-}
+import { googleAuthSchema } from '../schemas/auth';
+import { GOOGLE_USERINFO_URL } from '../config';
+import { GoogleUser } from '../types/auth';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   // 프론트가 요청한 OAuth 토큰처리
   fastify.post('/auth/google', {
-    schema: {
-      summary: '구글 로그인',
-      tags: ['Auth'],
-      body: {
-        type: 'object',
-        required: ['googleAccessToken'],
-        properties: {
-          googleAccessToken: { type: 'string' },
-        },
-      },
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            accessToken: { type: 'string' },
-            refreshToken: { type: 'string' },
-            message: { type: 'string' },
-          },
-        },
-      },
-    },
+    schema: googleAuthSchema,
     handler: async (request, reply) => {
       const { googleAccessToken } = request.body as { googleAccessToken: string };
 

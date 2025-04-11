@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const baseSchemaPath = path.join(__dirname, '../prisma/base.prisma');
 const enumsPath = path.join(__dirname, '../prisma/enums.prisma');
 const modelsDirPath = path.join(__dirname, '../prisma/models');
-const outputPath = path.join(__dirname, '../prisma/schema.prisma');
+const outputPath = path.join(__dirname, '../prisma/schemas.prisma');
 
 // 기본 스키마와 열거형 읽기
 const baseSchema: string = fs.readFileSync(baseSchemaPath, 'utf-8');
@@ -38,4 +38,4 @@ ${models}`;
 // 최종 스키마 파일 작성
 fs.writeFileSync(outputPath, finalSchema);
 
-console.log('Generated schema.prisma successfully!');
+console.log('Generated schemas.prisma successfully!');
