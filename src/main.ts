@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import swagger from './plugins/swagger.js';
 import prismaPlugin from './plugins/prismaPlugin.js';
+import jwtMiddleware from './plugins/jwtMiddleware.js';
 import authRoute from './routes/auth.js';
 
 const fastify = Fastify({
@@ -9,8 +10,15 @@ const fastify = Fastify({
 
 // Swagger 플러그인 등록
 await fastify.register(swagger);
-await fastify.register(prismaPlugin); // <-- 이게 먼저여도 괜찮지만
-await fastify.register(authRoute); // 이건 반드시 등록되어야 함!
+
+// Prisma 플러그인
+await fastify.register(prismaPlugin);
+
+// JWT 미들웨어 등록 (인증 필터)
+await fastify.register(jwtMiddleware);
+
+// 라우트
+await fastify.register(authRoute);
 
 // health check api
 fastify.get('/ping', async (request, reply) => {
