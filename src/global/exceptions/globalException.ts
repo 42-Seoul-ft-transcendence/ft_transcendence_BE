@@ -8,6 +8,12 @@ export enum GlobalErrorCode {
   AUTH_EXPIRED_TOKEN = 'AUTH_003',
   AUTH_UNAUTHORIZED = 'AUTH_004',
 
+  // 2FA 관련 에러
+  TWO_FACTOR_ALREADY_ENABLED = 'TWO_FACTOR_ALREADY_ENABLED',
+  TWO_FACTOR_NOT_ENABLED = 'TWO_FACTOR_NOT_ENABLED',
+  TWO_FACTOR_INVALID_TOKEN = 'TWO_FACTOR_INVALID_TOKEN',
+  TWO_FACTOR_REQUIRED = 'TWO_FACTOR_REQUIRED',
+
   // 사용자 관련 에러
   USER_NOT_FOUND = 'USER_001',
   USER_ALREADY_EXISTS = 'USER_002',
@@ -51,6 +57,24 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.AUTH_UNAUTHORIZED]: {
     statusCode: 403,
     message: '권한이 없습니다',
+  },
+
+  // 2FA 관련 에러 매핑
+  [GlobalErrorCode.TWO_FACTOR_ALREADY_ENABLED]: {
+    statusCode: 400,
+    message: '2단계 인증이 이미 활성화되어 있습니다.',
+  },
+  [GlobalErrorCode.TWO_FACTOR_NOT_ENABLED]: {
+    statusCode: 400,
+    message: '2단계 인증이 활성화되어 있지 않습니다.',
+  },
+  [GlobalErrorCode.TWO_FACTOR_INVALID_TOKEN]: {
+    statusCode: 401,
+    message: '유효하지 않은 2단계 인증 코드입니다.',
+  },
+  [GlobalErrorCode.TWO_FACTOR_REQUIRED]: {
+    statusCode: 401,
+    message: '2단계 인증이 필요합니다.',
   },
 
   // 사용자 관련

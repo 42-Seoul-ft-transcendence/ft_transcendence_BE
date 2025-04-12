@@ -19,6 +19,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     if (
       request.url.startsWith('/ping') ||
       request.url.startsWith('/api/auth/google') ||
+      request.url.startsWith('/api/auth/2fa/authenticate') ||
       request.url.startsWith('/documentation') ||
       request.url.startsWith('/documentation/json')
     ) {
@@ -41,7 +42,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
       // 토큰에서 필요한 정보를 request.user 에 세팅
-      request.user = { userId: decoded.userId };
+      request.user = { id: decoded.userId };
     } catch (err) {
       throw new GlobalException(GlobalErrorCode.AUTH_EXPIRED_TOKEN);
     }

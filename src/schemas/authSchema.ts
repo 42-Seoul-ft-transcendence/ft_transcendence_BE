@@ -1,5 +1,6 @@
 export const googleAuthSchema = {
   summary: '구글 로그인',
+  description: "message = {'2단계 인증이 필요합니다.' | '회원가입 성공' | '로그인 성공'}",
   tags: ['Auth'],
   body: {
     type: 'object',
@@ -14,8 +15,8 @@ export const googleAuthSchema = {
       properties: {
         accessToken: { type: 'string' },
         refreshToken: { type: 'string' },
-        message: { type: 'string' },
         userId: { type: 'string' },
+        message: { type: 'string' },
         requireTFA: { type: 'boolean' },
       },
     },

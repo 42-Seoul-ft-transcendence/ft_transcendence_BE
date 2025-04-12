@@ -30,6 +30,7 @@ export default fastifyPlugin(async (fastify: FastifyInstance) => {
           },
         },
       },
+      security: [{ bearerAuth: [] }],
     },
   });
 
