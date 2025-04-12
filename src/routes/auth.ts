@@ -1,93 +1,32 @@
 import { FastifyPluginAsync } from 'fastify';
-import fetch from 'node-fetch';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
-
-const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
-
-interface GoogleUser {
-  sub: string;
-  email: string;
-  name: string;
-  picture: string;
-}
+import { googleAuthSchema } from '../schemas/authSchema';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
-  // 프론트가 요청한 OAuth 토큰처리
   fastify.post('/auth/google', {
-    schema: {
-      summary: '구글 로그인',
-      tags: ['Auth'],
-      body: {
-        type: 'object',
-        required: ['googleAccessToken'],
-        properties: {
-          googleAccessToken: { type: 'string' },
-        },
-      },
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            accessToken: { type: 'string' },
-            refreshToken: { type: 'string' },
-            message: { type: 'string' },
-          },
-        },
-      },
-    },
+    schema: googleAuthSchema,
     handler: async (request, reply) => {
       const { googleAccessToken } = request.body as { googleAccessToken: string };
 
       // 구글 유저 정보 가져오기
-      const res = await fetch(GOOGLE_USERINFO_URL, {
-        headers: { Authorization: `Bearer ${googleAccessToken}` },
-      });
+      const googleUser = await fastify.googleAuthService.getGoogleUserInfo(googleAccessToken);
+      const { user, isNewUser } = await fastify.googleAuthService.findOrCreateUser(googleUser);
 
-      // 구글 유저 정보가 없거나 유효하지 않은 경우
-      if (!res.ok) {
-        return reply.code(401).send({ message: 'Invalid Google access token' });
-      }
-
-      const googleUser = await res.json();
-      const { sub: googleId, email, name, picture } = googleUser as GoogleUser;
-
-      // Authentication.googleId로 유저 조회
-      let auth = await fastify.prisma.authentication.findUnique({
-        where: { googleId },
-        include: { user: true },
-      });
-
-      let user;
-      let isNewUser = false;
-
-      if (!auth) {
-        // 기존에 유저가 없을시 회원가입
-        user = await fastify.prisma.user.create({
-          data: {
-            email,
-            username: email.split('@')[0], // 기본 유저네임 생성
-            passwordHash: '', // 구글 로그인 시 비밀번호 없음
-            avatarUrl: picture,
-            authentication: {
-              create: {
-                googleId,
-                tfaEnabled: false,
-              },
-            },
-          },
-          include: { authentication: true },
+      // 2FA가 활성화되어 있는지 확인
+      if (user.twoFactorEnabled) {
+        return reply.send({
+          requireTwoFactor: true,
+          userId: user.id,
+          message: '2단계 인증이 필요합니다.',
         });
-        isNewUser = true;
-      } else {
-        user = auth.user;
       }
 
-      const accessToken = generateAccessToken(user.id);
-      const refreshToken = generateRefreshToken(user.id);
+      // 2FA가 없거나 새 사용자인 경우 바로 토큰 발급
+      const { accessToken, refreshToken } = fastify.authService.generateTokens(user.id);
 
       return reply.send({
         accessToken,
         refreshToken,
+        requireTwoFactor: false,
         message: isNewUser ? '회원가입 성공' : '로그인 성공',
       });
     },
