@@ -24,39 +24,32 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
       }
 
       const googleUser = await res.json();
-      const { sub: googleId, email, name, picture } = googleUser as GoogleUser;
+      const { sub: googleId, email, picture } = googleUser as GoogleUser;
 
-      // Authentication.googleId로 유저 조회
-      const auth = await fastify.prisma.authentication.findUnique({
+      // User.googleId로 유저 조회 (직접 User 모델에서 googleId 검색)
+      const existingUser = await fastify.prisma.user.findUnique({
         where: { googleId },
-        include: { user: true },
       });
 
       let user;
       let isNewUser = false;
 
-      if (!auth) {
-        // 기존에 유저가 없을시 회원가입
+      if (!existingUser) {
         user = await fastify.prisma.user.create({
           data: {
             email,
-            username: email.split('@')[0], // 기본 유저네임 생성
-            passwordHash: '', // 구글 로그인 시 비밀번호 없음
-            avatarUrl: picture,
-            authentication: {
-              create: {
-                googleId,
-                tfaEnabled: false,
-              },
-            },
+            name: googleId,
+            googleId,
+            image: picture,
+            twoFactorEnabled: false,
           },
-          include: { authentication: true },
         });
         isNewUser = true;
       } else {
-        user = auth.user;
+        user = existingUser;
       }
 
+      // id가 int 타입으로 변경됨에 따라 적절한 타입으로 전달
       const accessToken = generateAccessToken(user.id);
       const refreshToken = generateRefreshToken(user.id);
 
