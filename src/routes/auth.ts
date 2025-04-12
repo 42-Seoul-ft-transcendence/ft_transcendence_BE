@@ -1,15 +1,23 @@
 import { FastifyPluginAsync } from 'fastify';
 import { googleAuthSchema } from '../schemas/auth';
-import { GoogleAuthController } from '../controllers/googleAuthController';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
-  // 컨트롤러 인스턴스 생성
-  const googleAuthController = new GoogleAuthController(fastify.prisma);
-
-  // 프론트가 요청한 OAuth 토큰처리
   fastify.post('/auth/google', {
     schema: googleAuthSchema,
-    handler: googleAuthController.handleGoogleLogin,
+    handler: async (request, reply) => {
+      const { googleAccessToken } = request.body as { googleAccessToken: string };
+
+      // 플러그인으로 등록된 서비스 사용
+      const googleUser = await fastify.googleAuthService.getGoogleUserInfo(googleAccessToken);
+      const { user, isNewUser } = await fastify.googleAuthService.findOrCreateUser(googleUser);
+      const { accessToken, refreshToken } = fastify.authService.generateTokens(user.id);
+
+      return reply.send({
+        accessToken,
+        refreshToken,
+        message: isNewUser ? '회원가입 성공' : '로그인 성공',
+      });
+    },
   });
 };
 

@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginCallback } from 'fastify';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config';
-import { GlobalErrorCode, GlobalException } from '../exceptions/globalException';
+import { JWT_SECRET } from '../global/config';
+import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException';
 
 interface JwtPayload {
   userId: number; // 토큰에 넣을 값
@@ -18,7 +18,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     // 1) 인증이 필요없는 path 예외 처리
     if (
       request.url.startsWith('/ping') ||
-      request.url.startsWith('/auth/google') ||
+      request.url.startsWith('/api/auth/google') ||
       request.url.startsWith('/documentation') ||
       request.url.startsWith('/documentation/json')
     ) {

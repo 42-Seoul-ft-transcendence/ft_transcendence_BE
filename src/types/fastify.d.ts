@@ -7,4 +7,14 @@ declare module 'fastify' {
       userId: number;
     };
   }
+
+  interface FastifyInstance {
+    authService: {
+      generateTokens(userId: number): { accessToken: string; refreshToken: string };
+    };
+    googleAuthService: {
+      getGoogleUserInfo(googleAccessToken: string): Promise<any>;
+      findOrCreateUser(googleUser: any): Promise<{ user: any; isNewUser: boolean }>;
+    };
+  }
 }
