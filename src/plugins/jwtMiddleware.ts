@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginCallback } from 'fastify';
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = 'your_jwt_secret';
+import { JWT_SECRET } from '../config';
+import { GlobalErrorCode, GlobalException } from '../exceptions/globalException';
 
 interface JwtPayload {
   userId: number; // 토큰에 넣을 값
@@ -28,13 +28,13 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     // 2) Authorization 헤더 확인
     const { authorization } = request.headers;
     if (!authorization) {
-      return reply.status(401).send({ message: '인증 토큰이 존재하지 않습니다.' });
+      throw new GlobalException(GlobalErrorCode.AUTH_UNAUTHORIZED);
     }
 
     // 3) 'Bearer <token>' 에서 token 추출
     const token = authorization.replace(/^Bearer\s+/, '');
     if (!token) {
-      return reply.status(401).send({ message: '인증 토큰 형식이 유효하지 않습니다.' });
+      throw new GlobalException(GlobalErrorCode.AUTH_INVALID_TOKEN);
     }
 
     // 4) JWT 검증
@@ -43,8 +43,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
       // 토큰에서 필요한 정보를 request.user 에 세팅
       request.user = { userId: decoded.userId };
     } catch (err) {
-      // 만료 or 유효하지 않은 토큰 예외 처리
-      return reply.status(401).send({ message: '만료되었거나 유효하지 않은 토큰입니다.' });
+      throw new GlobalException(GlobalErrorCode.AUTH_EXPIRED_TOKEN);
     }
   });
 

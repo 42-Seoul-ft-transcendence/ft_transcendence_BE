@@ -4,6 +4,7 @@ import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
 import { googleAuthSchema } from '../schemas/auth';
 import { GOOGLE_USERINFO_URL } from '../config';
 import { GoogleUser } from '../types/auth';
+import { GlobalErrorCode, GlobalException } from '../exceptions/globalException';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   // 프론트가 요청한 OAuth 토큰처리
@@ -19,14 +20,14 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
 
       // 구글 유저 정보가 없거나 유효하지 않은 경우
       if (!res.ok) {
-        return reply.code(401).send({ message: 'Invalid Google access token' });
+        throw new GlobalException(GlobalErrorCode.AUTH_INVALID_TOKEN);
       }
 
       const googleUser = await res.json();
       const { sub: googleId, email, name, picture } = googleUser as GoogleUser;
 
       // Authentication.googleId로 유저 조회
-      let auth = await fastify.prisma.authentication.findUnique({
+      const auth = await fastify.prisma.authentication.findUnique({
         where: { googleId },
         include: { user: true },
       });
