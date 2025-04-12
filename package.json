@@ -8,13 +8,14 @@
     "start:build": "tsc -w --project tsconfig.json && npx -p tsconfig.json",
     "build:live": "nodemon --watch 'src/' --exec node --loader ts-node/esm src/main.ts --verbose",
     "start": "npm run format && npm run build:live",
-    "generate-schema": "node --loader ts-node/esm scripts/generate-prisma-schema.ts",
-    "prisma:generate": "npm run generate-schema && prisma generate",
-    "prisma:migrate": "npm run generate-schema && prisma migrate dev",
-    "prisma:studio": "npm run generate-schema && prisma studio",
+
     "lint": "eslint 'src/**/*.{ts,js}'",
     "format": "prettier --write 'src/**/*.{ts,js}'",
-    "format:check": "prettier --check 'src/**/*.{ts,js}'"
+    "format:check": "prettier --check 'src/**/*.{ts,js}'",
+
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",

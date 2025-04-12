@@ -1,3 +1,6 @@
+// This is your Prisma schema file
+// Learn more about it at https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,183 +10,146 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  displayName    String    @unique
+  password       String?   // Hashed password, nullable for OAuth users
+  avatar         String?   // URL to avatar image
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-enum UserStatus {
-  ONLINE
-  OFFLINE
-  IN_GAME
+  // Game statistics
+  wins           Int       @default(0)
+  losses         Int       @default(0)
+
+  // OAuth related fields
+  googleId       String?   @unique
+
+  // Two-factor authentication
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
+
+  // Relations
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  friends                Friendship[]    @relation("UserFriends")
+  friendsOf              Friendship[]    @relation("FriendsOfUser")
+
+  playerMatches        Match[]         @relation("PlayerMatches")
+  tournaments          Tournament[]    @relation("TournamentParticipants")
+  tournamentMatches    TournamentMatch[] @relation("TournamentMatchPlayers")
+
+  // Online status
+  isOnline       Boolean   @default(false)
+  lastSeen       DateTime  @default(now())
+
+  @@map("users")
 }
 
-enum TournamentType {
-  TWO_PLAYER
-  FOUR_PLAYER
+model FriendRequest {
+  id          String    @id @default(uuid())
+  senderId    String
+  receiverId  String
+  status      String    @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  sender      User      @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User      @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@map("friend_requests")
 }
-
-enum TournamentStatus {
-  WAITING
-  IN_PROGRESS
-  COMPLETED
-}
-
-enum MatchStatus {
-  PENDING
-  ACTIVE
-  COMPLETED
-}
-
-enum FriendshipStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-}
-
-
-model Match {
-  id           Int      @id @default(autoincrement())
-  tournamentId Int
-  round        Int
-  status       MatchStatus @default(PENDING)
-  startedAt    DateTime?
-  endedAt      DateTime?
-  nextMatchId  Int?
-  
-  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  nextMatch    Match?     @relation("NextMatch", fields: [nextMatchId], references: [id], onDelete: SetNull)
-  previousMatches Match[] @relation("NextMatch")
-  participants MatchParticipant[]
-}
-
-model MatchParticipant {
-  id        Int     @id @default(autoincrement())
-  matchId   Int
-  userId    Int
-  score     Int     @default(0)
-  isWinner  Boolean @default(false)
-  
-  match     Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@unique([matchId, userId])
-}
-
 
 model Friendship {
-  id        Int     @id @default(autoincrement())
-  userId    Int
-  friendId  Int
-  status    FriendshipStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  
-  user      User    @relation("FriendshipInitiator", fields: [userId], references: [id], onDelete: Cascade)
-  friend    User    @relation("FriendshipReceiver", fields: [friendId], references: [id], onDelete: Cascade)
-  
+  id          String    @id @default(uuid())
+  userId      String
+  friendId    String
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friend      User      @relation("FriendsOfUser", fields: [friendId], references: [id], onDelete: Cascade)
+
   @@unique([userId, friendId])
+  @@map("friendships")
 }
-
-model ChatMessage {
-  id          Int      @id @default(autoincrement())
-  senderId    Int
-  receiverId  Int
-  message     String
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  
-  sender      User     @relation("SenderRelation", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver    User     @relation("ReceiverRelation", fields: [receiverId], references: [id], onDelete: Cascade)
-}
-
-model BlockedUser {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  blockedId   Int
-  blockedAt   DateTime @default(now())
-  
-  user        User     @relation("UserWhoBlocked", fields: [userId], references: [id], onDelete: Cascade)
-  blocked     User     @relation("BlockedUser", fields: [blockedId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, blockedId])
-}
-
 
 model Tournament {
-  id          Int     @id @default(autoincrement())
+  id          String    @id @default(uuid())
   name        String
-  type        TournamentType
-  status      TournamentStatus @default(WAITING)
-  createdAt   DateTime @default(now())
-  creatorId   Int?
-  
-  creator     User?   @relation("TournamentCreator", fields: [creatorId], references: [id], onDelete: SetNull)
-  participants TournamentParticipant[]
-  matches     Match[]
+  type        String    // "2P" or "4P"
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  startTime   DateTime?
+  endTime     DateTime?
+
+  // Relations
+  participants User[]   @relation("TournamentParticipants")
+  matches      TournamentMatch[]
+
+  @@map("tournaments")
 }
 
-model TournamentParticipant {
-  id           Int      @id @default(autoincrement())
-  tournamentId Int
-  userId       Int
-  joinedAt     DateTime @default(now())
-  
-  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@unique([tournamentId, userId])
+model TournamentMatch {
+  id            String    @id @default(uuid())
+  tournamentId  String
+  round         Int       // Round number (1, 2, 3, etc.)
+  matchOrder    Int       // Order within the round (for displaying bracket position)
+  status        String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  tournament    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  players       User[]     @relation("TournamentMatchPlayers")
+  match         Match?     // The actual Pong match
+
+  // Parent-child relationship for advancing in brackets
+  nextMatchId   String?
+  nextMatch     TournamentMatch?  @relation("MatchProgression", fields: [nextMatchId], references: [id])
+  previousMatches TournamentMatch[] @relation("MatchProgression")
+
+  @@map("tournament_matches")
 }
 
+model Match {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  startTime     DateTime?
+  endTime       DateTime?
+  status        String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, ABANDONED
 
-model User {
-  id                     Int                   @id @default(autoincrement())
-  username               String                @unique
-  email                  String                @unique
-  passwordHash           String
-  avatarUrl              String?
-  status                 UserStatus            @default(OFFLINE)
-  createdAt              DateTime              @default(now())
-  lastLogin              DateTime?
-  
-  authentication         Authentication?
-  stats                  UserStats?
-  sentMessages           ChatMessage[]         @relation("SenderRelation")
-  receivedMessages       ChatMessage[]         @relation("ReceiverRelation")
-  participatedMatches    MatchParticipant[]
-  participatedTournaments TournamentParticipant[]
-  createdTournaments     Tournament[]          @relation("TournamentCreator")
-  friendshipsInitiated   Friendship[]          @relation("FriendshipInitiator")
-  friendshipsReceived    Friendship[]          @relation("FriendshipReceiver")
-  blockedUsers           BlockedUser[]         @relation("UserWhoBlocked")
-  blockedByUsers         BlockedUser[]         @relation("BlockedUser")
-  sessions               Session[]
+  // Game scores
+  player1Score  Int       @default(0)
+  player2Score  Int       @default(0)
+
+  // Tournament connection
+  tournamentMatchId String? @unique
+  tournamentMatch   TournamentMatch? @relation(fields: [tournamentMatchId], references: [id])
+
+  // Players
+  players       User[]    @relation("PlayerMatches")
+
+  // Game state (can be stored as JSON)
+  gameState     String?   // For storing current ball position, player positions, etc. as JSON string
+
+  // 추가: GameLog와의 관계 정의
+  gameLogs      GameLog[]
+
+  @@map("matches")
 }
 
-model Authentication {
-  id          Int     @id @default(autoincrement())
-  userId      Int     @unique
-  googleId    String? @unique
-  tfaEnabled  Boolean @default(false)
-  tfaSecret   String?
-  
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+model GameLog {
+  id          String    @id @default(uuid())
+  matchId     String
+  timestamp   DateTime  @default(now())
+  event       String    // GOAL, PADDLE_HIT, GAME_START, GAME_END, etc.
+  data        String?   // Additional event data as JSON string
+
+  match       Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@map("game_logs")
 }
-
-model UserStats {
-  id          Int     @id @default(autoincrement())
-  userId      Int     @unique
-  wins        Int     @default(0)
-  losses      Int     @default(0)
-  totalPoints Int     @default(0)
-  
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Session {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  token       String
-  expiresAt   DateTime
-  ipAddress   String?
-  createdAt   DateTime @default(now())
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-
