@@ -10,6 +10,11 @@ declare module 'fastify' {
   interface FastifyInstance {
     authService: {
       generateTokens(userId: number): { accessToken: string; refreshToken: string };
+
+      refreshTokens(refreshToken: string): Promise<{
+        accessToken: string;
+        refreshToken: string;
+      }>;
     };
 
     googleAuthService: {
