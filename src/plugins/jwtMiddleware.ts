@@ -1,12 +1,32 @@
 import fp from 'fastify-plugin';
-import { FastifyPluginCallback } from 'fastify';
+import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '../global/config';
 import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException';
 
 const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
   // request.user 라는 프로퍼티를 추가해줍니다.
-  fastify.decorateRequest('user', undefined);
+  fastify.decorateRequest('user');
+
+  // 인증 함수 생성 - 라우트에서 직접 사용 가능
+  const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { authorization } = request.headers;
+    if (!authorization) {
+      throw new GlobalException(GlobalErrorCode.AUTH_UNAUTHORIZED);
+    }
+
+    const token = authorization.replace(/^Bearer\s+/, '');
+    if (!token) {
+      throw new GlobalException(GlobalErrorCode.AUTH_INVALID_TOKEN);
+    }
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+      request.user = { id: decoded.userId };
+    } catch (err) {
+      throw new GlobalException(GlobalErrorCode.AUTH_EXPIRED_TOKEN);
+    }
+  };
 
   fastify.addHook('onRequest', async (request, reply) => {
     // 1) 인증이 필요없는 path 예외 처리
@@ -21,28 +41,10 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
       return;
     }
 
-    // 2) Authorization 헤더 확인
-    const { authorization } = request.headers;
-    if (!authorization) {
-      throw new GlobalException(GlobalErrorCode.AUTH_UNAUTHORIZED);
-    }
-
-    // 3) 'Bearer <token>' 에서 token 추출
-    const token = authorization.replace(/^Bearer\s+/, '');
-    if (!token) {
-      throw new GlobalException(GlobalErrorCode.AUTH_INVALID_TOKEN);
-    }
-
-    // 4) JWT 검증
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-      // 토큰에서 필요한 정보를 request.user 에 세팅
-      request.user = { id: decoded.userId };
-    } catch (err) {
-      throw new GlobalException(GlobalErrorCode.AUTH_EXPIRED_TOKEN);
-    }
+    await authenticate(request, reply);
   });
 
+  fastify.decorate('authenticate', authenticate);
   done();
 };
 
