@@ -1,10 +1,9 @@
 import { FastifyPluginAsync } from 'fastify';
 import { googleAuthSchema, refreshTokenSchema } from '../schemas/authSchema';
-import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   fastify
-    .post('/auth/google', {
+    .post('/login/google', {
       schema: googleAuthSchema,
       handler: async (request, reply) => {
         const { googleAccessToken } = request.body as { googleAccessToken: string };
@@ -33,7 +32,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         });
       },
     })
-    .post('/auth/refresh', {
+    .post('/refresh', {
       schema: refreshTokenSchema,
       handler: async (request, reply) => {
         const { refreshToken } = request.body as { refreshToken: string };

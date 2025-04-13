@@ -9,15 +9,16 @@ export enum GlobalErrorCode {
   AUTH_UNAUTHORIZED = 'AUTH_004',
 
   // 2FA 관련 에러
-  TWO_FACTOR_ALREADY_ENABLED = 'TWO_FACTOR_ALREADY_ENABLED',
-  TWO_FACTOR_NOT_ENABLED = 'TWO_FACTOR_NOT_ENABLED',
-  TWO_FACTOR_INVALID_TOKEN = 'TWO_FACTOR_INVALID_TOKEN',
-  TWO_FACTOR_REQUIRED = 'TWO_FACTOR_REQUIRED',
+  TWO_FACTOR_ALREADY_ENABLED = 'AUTH_005',
+  TWO_FACTOR_NOT_ENABLED = 'AUTH_006',
+  TWO_FACTOR_INVALID_TOKEN = 'AUTH_007',
+  TWO_FACTOR_REQUIRED = 'AUTH_008',
 
   // 사용자 관련 에러
   USER_NOT_FOUND = 'USER_001',
   USER_ALREADY_EXISTS = 'USER_002',
   USER_INVALID_DATA = 'USER_003',
+  USER_NAME_ALREADY_EXISTS = 'USER_004',
 
   // 외부 API 관련 에러
   API_EXTERNAL_ERROR = 'API_001',
@@ -90,6 +91,10 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
     statusCode: 400,
     message: '유효하지 않은 사용자 정보입니다',
   },
+  [GlobalErrorCode.USER_NAME_ALREADY_EXISTS]: {
+    statusCode: 409,
+    message: '이미 사용 중인 이름입니다.',
+  },
 
   // 외부 API 관련
   [GlobalErrorCode.API_EXTERNAL_ERROR]: {
@@ -148,7 +153,7 @@ export class GlobalException extends Error {
   errorCode: string;
   details?: any;
 
-  constructor(errorCode: GlobalErrorCode, details?: any) {
+  constructor(errorCode: GlobalErrorCode, details?: string) {
     const errorDefinition = ErrorDef[errorCode];
 
     // 정의된 에러 메시지 사용

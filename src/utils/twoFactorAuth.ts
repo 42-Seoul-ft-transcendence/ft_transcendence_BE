@@ -7,7 +7,7 @@ import * as qrcode from 'qrcode';
  * @param issuer 앱 이름 또는 발급자
  * @returns 비밀키 및 QR 코드 정보
  */
-export const generateTwoFactorSecret = async (username: string, issuer: string = 'PongApp') => {
+export const generateTwoFactorSecret = async (username: string, issuer = '42 ft_transcendence') => {
   // 새로운 비밀키 생성
   const secret = speakeasy.generateSecret({
     length: 20,
@@ -40,23 +40,6 @@ export const verifyTwoFactorToken = (token: string, secret: string): boolean => 
       window: 1, // 앞뒤 30초 허용 (총 90초 유효)
     });
   } catch (error) {
-    console.error('TOTP 검증 오류:', error);
     return false;
   }
-};
-
-/**
- * 백업 코드 생성
- * @returns 백업 코드 목록
- */
-export const generateBackupCodes = (): string[] => {
-  const codes: string[] = [];
-
-  // 8자리 백업 코드 10개 생성
-  for (let i = 0; i < 10; i++) {
-    const code = Math.floor(10000000 + Math.random() * 90000000).toString();
-    codes.push(code);
-  }
-
-  return codes;
 };
