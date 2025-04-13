@@ -14,6 +14,9 @@ export enum GlobalErrorCode {
   TWO_FACTOR_INVALID_TOKEN = 'AUTH_007',
   TWO_FACTOR_REQUIRED = 'AUTH_008',
 
+  // 어드민 비밀번호 관련 에러
+  AUTH_INVALID_ADMIN_PASSWORD = 'AUTH_009',
+
   // 사용자 관련 에러
   USER_NOT_FOUND = 'USER_001',
   USER_ALREADY_EXISTS = 'USER_002',
@@ -86,6 +89,12 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.TWO_FACTOR_REQUIRED]: {
     statusCode: 401,
     message: '2단계 인증이 필요합니다.',
+  },
+
+  // 어드민 인증 관련 에러 매핑
+  [GlobalErrorCode.AUTH_INVALID_ADMIN_PASSWORD]: {
+    statusCode: 401,
+    message: '어드민 비밀번호가 올바르지 않습니다.',
   },
 
   // 사용자 관련

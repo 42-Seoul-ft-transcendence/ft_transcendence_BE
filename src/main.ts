@@ -12,6 +12,8 @@ import userService from './plugins/user/userService';
 import userRoute from './routes/user';
 import friendService from './plugins/user/friendService';
 import friendRoute from './routes/friend';
+import adminRoute from './routes/admin';
+import adminService from './plugins/admin/adminService';
 
 const fastify = Fastify({
   // logger: true,
@@ -32,6 +34,7 @@ await fastify.register(googleAuthService);
 await fastify.register(twoFactorAuthService);
 await fastify.register(userService);
 await fastify.register(friendService);
+await fastify.register(adminService);
 
 // JWT 미들웨어 등록 (인증 필터)
 await fastify.register(jwtMiddleware);
@@ -41,6 +44,7 @@ await fastify.register(authRoute, { prefix: '/api/auth' });
 await fastify.register(twoFactorAuthRoute, { prefix: '/api/auth' });
 await fastify.register(userRoute, { prefix: '/api/users' });
 await fastify.register(friendRoute, { prefix: '/api/friends' });
+await fastify.register(adminRoute, { prefix: '/api/admin' });
 
 // health check api
 fastify.get('/ping', async () => {

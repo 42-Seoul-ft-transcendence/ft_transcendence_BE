@@ -91,5 +91,18 @@ declare module 'fastify' {
       }>;
       getPendingFriendRequests(userId: number): Promise<{ requests: any[] }>;
     };
+
+    adminAuthService: {
+      generateTokenForUser(
+        userId: number,
+        adminPassword: string,
+      ): Promise<{
+        userId: number;
+        userName: string;
+        accessToken: string;
+        refreshToken: string;
+        message: string;
+      }>;
+    };
   }
 }
