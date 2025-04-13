@@ -31,6 +31,13 @@ export default fastifyPlugin(async (fastify: FastifyInstance) => {
         },
       },
       security: [{ bearerAuth: [] }],
+      // 태그 순서 지정
+      tags: [
+        { name: 'Admin', description: '관리자 기능' },
+        { name: 'Auth', description: '인증 관련 기능' },
+        { name: 'User', description: '사용자 관리' },
+        { name: 'Friend', description: '친구 관리' },
+      ],
     },
   });
 
