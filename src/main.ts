@@ -8,6 +8,8 @@ import twoFactorAuthService from './plugins/auth/twoFactorAuthService.js';
 import authRoute from './routes/auth.js';
 import twoFactorAuthRoute from './routes/twoFactorAuth.js';
 import { exceptionHandler } from './global/exceptions/exceptionHandler.js';
+import userService from './plugins/user/userService';
+import userRoute from './routes/user';
 
 const fastify = Fastify({
   // logger: true,
@@ -26,13 +28,15 @@ await fastify.register(swagger);
 await fastify.register(authService);
 await fastify.register(googleAuthService);
 await fastify.register(twoFactorAuthService);
+await fastify.register(userService);
 
 // JWT 미들웨어 등록 (인증 필터)
 await fastify.register(jwtMiddleware);
 
 // 라우트 등록
-await fastify.register(authRoute, { prefix: '/api' });
-await fastify.register(twoFactorAuthRoute, { prefix: '/api' });
+await fastify.register(authRoute, { prefix: '/api/auth' });
+await fastify.register(twoFactorAuthRoute, { prefix: '/api/auth' });
+await fastify.register(userRoute, { prefix: '/api/user' });
 
 // health check api
 fastify.get('/ping', async (request, reply) => {

@@ -33,7 +33,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     if (
       request.url.startsWith('/ping') ||
       request.url.startsWith('/api/auth/refresh') ||
-      request.url.startsWith('/api/auth/google') ||
+      request.url.startsWith('/api/auth/login/google') ||
       request.url.startsWith('/api/auth/2fa/authenticate') ||
       request.url.startsWith('/documentation') ||
       request.url.startsWith('/documentation/json')
