@@ -10,6 +10,8 @@ import twoFactorAuthRoute from './routes/twoFactorAuth.js';
 import { exceptionHandler } from './global/exceptions/exceptionHandler.js';
 import userService from './plugins/user/userService';
 import userRoute from './routes/user';
+import friendService from './plugins/user/friendService';
+import friendRoute from './routes/friend';
 
 const fastify = Fastify({
   // logger: true,
@@ -29,6 +31,7 @@ await fastify.register(authService);
 await fastify.register(googleAuthService);
 await fastify.register(twoFactorAuthService);
 await fastify.register(userService);
+await fastify.register(friendService);
 
 // JWT 미들웨어 등록 (인증 필터)
 await fastify.register(jwtMiddleware);
@@ -36,7 +39,8 @@ await fastify.register(jwtMiddleware);
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/api/auth' });
 await fastify.register(twoFactorAuthRoute, { prefix: '/api/auth' });
-await fastify.register(userRoute, { prefix: '/api/user' });
+await fastify.register(userRoute, { prefix: '/api/users' });
+await fastify.register(friendRoute, { prefix: '/api/friends' });
 
 // health check api
 fastify.get('/ping', async () => {

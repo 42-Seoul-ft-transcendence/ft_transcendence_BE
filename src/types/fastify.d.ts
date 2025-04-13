@@ -64,5 +64,32 @@ declare module 'fastify' {
         totalPages: number;
       }>;
     };
+
+    friendService: {
+      sendFriendRequest(senderId: number, receiverId: number): Promise<any>;
+      acceptFriendRequest(
+        userId: number,
+        requestId: number,
+      ): Promise<{ success: boolean; message: string }>;
+      declineFriendRequest(
+        userId: number,
+        requestId: number,
+      ): Promise<{ success: boolean; message: string }>;
+      deleteFriend(
+        userId: number,
+        friendId: number,
+      ): Promise<{ success: boolean; message: string }>;
+      getFriends(
+        userId: number,
+        options: { page?: number; limit?: number; search?: string },
+      ): Promise<{
+        friends: any[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>;
+      getPendingFriendRequests(userId: number): Promise<{ requests: any[] }>;
+    };
   }
 }

@@ -20,6 +20,16 @@ export enum GlobalErrorCode {
   USER_INVALID_DATA = 'USER_003',
   USER_NAME_ALREADY_EXISTS = 'USER_004',
 
+  // 친구 관련 에러
+  FRIEND_SELF_REQUEST = 'FRIEND_001',
+  FRIEND_ALREADY_FRIENDS = 'FRIEND_002',
+  FRIEND_REQUEST_ALREADY_SENT = 'FRIEND_003',
+  FRIEND_REQUEST_NOT_FOUND = 'FRIEND_004',
+  FRIEND_REQUEST_NOT_AUTHORIZED = 'FRIEND_005',
+  FRIEND_REQUEST_ALREADY_PROCESSED = 'FRIEND_006',
+  FRIEND_NOT_FOUND = 'FRIEND_007',
+  FRIEND_SELF_DELETE = 'FRIEND_008',
+
   // 외부 API 관련 에러
   API_EXTERNAL_ERROR = 'API_001',
   API_GOOGLE_ERROR = 'API_002',
@@ -94,6 +104,40 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.USER_NAME_ALREADY_EXISTS]: {
     statusCode: 409,
     message: '이미 사용 중인 이름입니다.',
+  },
+
+  // 친구 관련 에러 매핑
+  [GlobalErrorCode.FRIEND_SELF_REQUEST]: {
+    statusCode: 400,
+    message: '자기 자신에게 친구 요청을 보낼 수 없습니다.',
+  },
+  [GlobalErrorCode.FRIEND_ALREADY_FRIENDS]: {
+    statusCode: 400,
+    message: '이미 친구 관계입니다.',
+  },
+  [GlobalErrorCode.FRIEND_REQUEST_ALREADY_SENT]: {
+    statusCode: 400,
+    message: '이미 친구 요청을 보냈습니다.',
+  },
+  [GlobalErrorCode.FRIEND_REQUEST_NOT_FOUND]: {
+    statusCode: 404,
+    message: '친구 요청을 찾을 수 없습니다.',
+  },
+  [GlobalErrorCode.FRIEND_REQUEST_NOT_AUTHORIZED]: {
+    statusCode: 403,
+    message: '이 친구 요청에 대한 권한이 없습니다.',
+  },
+  [GlobalErrorCode.FRIEND_REQUEST_ALREADY_PROCESSED]: {
+    statusCode: 400,
+    message: '이미 처리된 친구 요청입니다.',
+  },
+  [GlobalErrorCode.FRIEND_NOT_FOUND]: {
+    statusCode: 404,
+    message: '친구 관계를 찾을 수 없습니다.',
+  },
+  [GlobalErrorCode.FRIEND_SELF_DELETE]: {
+    statusCode: 400,
+    message: '자기 자신을 친구 목록에서 삭제할 수 없습니다.',
   },
 
   // 외부 API 관련
