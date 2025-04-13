@@ -153,7 +153,7 @@ export class GlobalException extends Error {
   errorCode: string;
   details?: any;
 
-  constructor(errorCode: GlobalErrorCode, details?: any) {
+  constructor(errorCode: GlobalErrorCode, details?: string) {
     const errorDefinition = ErrorDef[errorCode];
 
     // 정의된 에러 메시지 사용

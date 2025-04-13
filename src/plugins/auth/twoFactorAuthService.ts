@@ -1,13 +1,10 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import {
-  generateTwoFactorSecret,
-  verifyTwoFactorToken,
-  generateBackupCodes,
-} from '../../utils/twoFactorAuth';
+import { generateTwoFactorSecret, verifyTwoFactorToken } from '../../utils/twoFactorAuth';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
+import { decrypt, encrypt } from '../../utils/encryption';
 
 interface TwoFactorSetupResponse {
   secret: string;
@@ -76,22 +73,18 @@ export default fp(async (fastify: FastifyInstance) => {
         throw new GlobalException(GlobalErrorCode.TWO_FACTOR_INVALID_TOKEN);
       }
 
-      // 백업 코드 생성
-      const backupCodes = generateBackupCodes();
-
       // 사용자 정보 업데이트
       await prisma.user.update({
         where: { id: userId },
         data: {
           twoFactorEnabled: true,
-          twoFactorSecret: secret,
+          twoFactorSecret: encrypt(secret),
           // 백업 코드 저장 로직은 필요시 추가
         },
       });
 
       return {
         success: true,
-        backupCodes,
       };
     },
 
@@ -112,7 +105,8 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 토큰 검증
-      const isValid = verifyTwoFactorToken(token, user.twoFactorSecret);
+      const decryptedSecret = decrypt(user.twoFactorSecret);
+      const isValid = verifyTwoFactorToken(token, decryptedSecret);
 
       if (!isValid) {
         throw new GlobalException(GlobalErrorCode.TWO_FACTOR_INVALID_TOKEN);

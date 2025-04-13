@@ -39,7 +39,7 @@ await fastify.register(twoFactorAuthRoute, { prefix: '/api/auth' });
 await fastify.register(userRoute, { prefix: '/api/user' });
 
 // health check api
-fastify.get('/ping', async (request, reply) => {
+fastify.get('/ping', async () => {
   return 'pong\n';
 });
 

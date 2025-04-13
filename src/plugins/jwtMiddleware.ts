@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyPluginCallback, FastifyRequest } from 'fastify';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { JWT_SECRET } from '../global/config';
 import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException';
@@ -9,7 +9,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
   fastify.decorateRequest('user');
 
   // 인증 함수 생성 - 라우트에서 직접 사용 가능
-  const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
+  const authenticate = async (request: FastifyRequest) => {
     const { authorization } = request.headers;
     if (!authorization) {
       throw new GlobalException(GlobalErrorCode.AUTH_UNAUTHORIZED);
@@ -28,7 +28,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     }
   };
 
-  fastify.addHook('onRequest', async (request, reply) => {
+  fastify.addHook('onRequest', async (request) => {
     // 1) 인증이 필요없는 path 예외 처리
     if (
       request.url.startsWith('/ping') ||
@@ -41,7 +41,7 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
       return;
     }
 
-    await authenticate(request, reply);
+    await authenticate(request);
   });
 
   fastify.decorate('authenticate', authenticate);
