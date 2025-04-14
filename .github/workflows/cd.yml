@@ -64,6 +64,4 @@ jobs:
         run: sudo docker logs cogo || true
 
       - name: Delete old docker image
-        run:
-          sudo docker container prune -f
-          sudo docker image prune -f
+        run: sudo docker system prune -f
