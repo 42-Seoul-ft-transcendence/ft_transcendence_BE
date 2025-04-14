@@ -17,7 +17,7 @@ export default fastifyPlugin(async (fastify: FastifyInstance) => {
           description: '개발 서버',
         },
         {
-          url: 'https://api.example.com',
+          url: 'https://back-coffeego.com',
           description: '프로덕션 서버',
         },
       ],
