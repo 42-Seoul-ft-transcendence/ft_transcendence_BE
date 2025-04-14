@@ -42,7 +42,7 @@ export default fastifyPlugin(async (fastify: FastifyInstance) => {
   });
 
   await fastify.register(fastifySwaggerUi, {
-    routePrefix: '/documentation',
+    routePrefix: '/ft/documentation',
     uiConfig: {
       docExpansion: 'list',
       deepLinking: true,
