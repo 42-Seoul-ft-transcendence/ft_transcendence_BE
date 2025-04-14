@@ -50,14 +50,18 @@ jobs:
 
       - name: Run new container
         run: |
-          sudo docker run -d --name ft_transcendence \
-            -p 8083:8083 \
+          sudo docker run --name ft_transcendence --rm -d -p 8083:8083 \
             -v $HOME/ft_transcendence_db:/app/prisma/data \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
             -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
             -e ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
             -e ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
             ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+          sleep 5
+          sudo docker ps -a
 
-      - name: Show running containers
-        run: sudo docker ps -a
+      - name: Check Docker logs
+        run: sudo docker logs cogo || true
+
+      - name: Delete old docker image
+        run: sudo docker system prune -f
