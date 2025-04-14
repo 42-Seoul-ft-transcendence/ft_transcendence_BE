@@ -40,14 +40,14 @@ await fastify.register(adminService);
 await fastify.register(jwtMiddleware);
 
 // 라우트 등록
-await fastify.register(authRoute, { prefix: '/api/auth' });
-await fastify.register(twoFactorAuthRoute, { prefix: '/api/auth' });
-await fastify.register(userRoute, { prefix: '/api/users' });
-await fastify.register(friendRoute, { prefix: '/api/friends' });
-await fastify.register(adminRoute, { prefix: '/api/admin' });
+await fastify.register(authRoute, { prefix: '/ft/api/auth' });
+await fastify.register(twoFactorAuthRoute, { prefix: '/ft/api/auth' });
+await fastify.register(userRoute, { prefix: '/ft/api/users' });
+await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
+await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
 
 // health check api
-fastify.get('/ping', async () => {
+fastify.get('/ft/ping', async () => {
   return 'pong\n';
 });
 
