@@ -1,0 +1,63 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+
+  deploy-to-ec2:
+    needs: build-and-deploy
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker image
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+
+      - name: Stop running container
+        run: sudo docker stop ft_transcendence || true
+
+      - name: Remove stopped container
+        run: sudo docker rm ft_transcendence || true
+
+      - name: Run new container
+        run: |
+          sudo docker run -d --name ft_transcendence -p 8083:8083 \
+          -v $HOME/ft_transcendence_data:/app/prisma/data \
+          -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          -e ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
+          -e ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
+          ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+
+      - name: Show running containers
+        run: sudo docker ps
