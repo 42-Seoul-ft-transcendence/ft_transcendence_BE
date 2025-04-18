@@ -10,6 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  OFFLINE
+  ONLINE
+  IN_QUEUE
+  IN_GAME
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -42,6 +49,7 @@ model User {
   // Online status
   isOnline Boolean  @default(false)
   lastSeen DateTime @default(now())
+  status  UserStatus @default(OFFLINE)
 
   @@map("users")
 }
@@ -137,6 +145,8 @@ model Match {
 
   // 추가: GameLog와의 관계 정의
   gameLogs GameLog[]
+
+  mode String @default("2P")
 
   @@map("matches")
 }
