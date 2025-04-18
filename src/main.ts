@@ -14,10 +14,10 @@ import friendService from './plugins/user/friendService';
 import friendRoute from './routes/friend';
 import adminRoute from './routes/admin';
 import adminService from './plugins/admin/adminService';
-import tournamentRoute from './routes/tournament';
+import tournamentRoute from './routes/tournament/tournament';
 import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
-import matchRoute from './routes/match';
+import matchRoute from './routes/tournament/match';
 
 const fastify = Fastify({
   // logger: true,
