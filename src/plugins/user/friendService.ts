@@ -120,8 +120,6 @@ export default fp(
           data: {
             senderId,
             receiverId,
-            senderName: sender.name,
-            receiverName,
             status: 'PENDING',
           },
         });
