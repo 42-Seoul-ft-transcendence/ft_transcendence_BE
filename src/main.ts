@@ -14,6 +14,8 @@ import friendService from './plugins/user/friendService';
 import friendRoute from './routes/friend';
 import adminRoute from './routes/admin';
 import adminService from './plugins/admin/adminService';
+import tournamentRoute from './routes/tournament';
+import tournamentService from './plugins/tournament/tournamentService';
 
 const fastify = Fastify({
   // logger: true,
@@ -35,6 +37,7 @@ await fastify.register(twoFactorAuthService);
 await fastify.register(userService);
 await fastify.register(friendService);
 await fastify.register(adminService);
+await fastify.register(tournamentService);
 
 // JWT 미들웨어 등록 (인증 필터)
 await fastify.register(jwtMiddleware);
@@ -45,6 +48,7 @@ await fastify.register(twoFactorAuthRoute, { prefix: '/ft/api/auth' });
 await fastify.register(userRoute, { prefix: '/ft/api/users' });
 await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
 await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
+await fastify.register(tournamentRoute, { prefix: '/ft/api/tournaments' });
 
 // health check api
 fastify.get('/ft/ping', async () => {

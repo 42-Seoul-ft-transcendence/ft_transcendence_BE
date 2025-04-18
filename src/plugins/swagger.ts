@@ -37,6 +37,7 @@ export default fastifyPlugin(async (fastify: FastifyInstance) => {
         { name: 'Auth', description: '인증 관련 기능' },
         { name: 'User', description: '사용자 관리' },
         { name: 'Friend', description: '친구 관리' },
+        { name: 'Tournament', description: '토너먼트 관련' },
       ],
     },
   });
