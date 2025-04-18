@@ -43,6 +43,14 @@ export enum GlobalErrorCode {
   TOURNAMENT_NOT_JOINED = 'TOURNAMENT_007',
   TOURNAMENT_FULL = 'TOURNAMENT_008',
 
+  // 매치 관련 에러
+  MATCH_NOT_FOUND = 'MATCH_001',
+  MATCH_SELF_PLAY = 'MATCH_002',
+  MATCH_NOT_AUTHORIZED = 'MATCH_003',
+  MATCH_INVALID_STATUS_TRANSITION = 'MATCH_004',
+  MATCH_ALREADY_EXISTS = 'MATCH_005',
+  TOURNAMENT_MATCH_NOT_FOUND = 'MATCH_006',
+
   // 외부 API 관련 에러
   API_EXTERNAL_ERROR = 'API_001',
   API_GOOGLE_ERROR = 'API_002',
@@ -191,6 +199,32 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.TOURNAMENT_FULL]: {
     statusCode: 400,
     message: '토너먼트 참가 인원이 가득 찼습니다.',
+  },
+
+  // 매치 관련 에러 매핑
+  [GlobalErrorCode.MATCH_NOT_FOUND]: {
+    statusCode: 404,
+    message: '매치를 찾을 수 없습니다.',
+  },
+  [GlobalErrorCode.MATCH_SELF_PLAY]: {
+    statusCode: 400,
+    message: '자기 자신과 매치를 진행할 수 없습니다.',
+  },
+  [GlobalErrorCode.MATCH_NOT_AUTHORIZED]: {
+    statusCode: 403,
+    message: '이 매치에 대한 권한이 없습니다.',
+  },
+  [GlobalErrorCode.MATCH_INVALID_STATUS_TRANSITION]: {
+    statusCode: 400,
+    message: '유효하지 않은 매치 상태 변경입니다.',
+  },
+  [GlobalErrorCode.MATCH_ALREADY_EXISTS]: {
+    statusCode: 400,
+    message: '해당 토너먼트 매치에 이미 게임이 생성되었습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_MATCH_NOT_FOUND]: {
+    statusCode: 404,
+    message: '토너먼트 매치를 찾을 수 없습니다.',
   },
 
   // 외부 API 관련
