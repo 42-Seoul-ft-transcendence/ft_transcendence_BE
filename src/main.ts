@@ -50,10 +50,6 @@ await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
 await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
 await fastify.register(tournamentRoute, { prefix: '/ft/api/tournaments' });
 
-
-// 라우트 등록
-
-
 // health check api
 fastify.get('/ft/ping', async () => {
   return 'pong\n';
