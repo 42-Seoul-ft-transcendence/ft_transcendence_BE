@@ -6,7 +6,7 @@ import {
   getMatchStateSchema,
   updateMatchStateSchema,
   getUserMatchHistorySchema,
-} from '../schemas/matchSchema';
+} from '../../schemas/tournament/matchSchema';
 
 const matchRoute: FastifyPluginAsync = async (fastify) => {
   // 매치 목록 조회
