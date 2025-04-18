@@ -129,5 +129,48 @@ declare module 'fastify' {
 
       leaveTournament(userId: number, tournamentId: number): Promise<any>;
     };
+
+    matchService: {
+      getMatches(options: { page?: number; limit?: number; status?: string }): Promise<{
+        matches: any[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>;
+
+      createMatch(
+        creatorId: number,
+        data: { player2Id: number; tournamentMatchId?: number },
+      ): Promise<any>;
+
+      getMatch(id: number): Promise<any>;
+
+      getMatchState(id: number): Promise<any>;
+
+      updateMatchState(
+        id: number,
+        userId: number,
+        data: {
+          status?: string;
+          player1Score?: number;
+          player2Score?: number;
+          gameState?: any;
+        },
+      ): Promise<any>;
+
+      addMatchLog(matchId: number, data: { event: string; data?: any }): Promise<any>;
+
+      getUserMatchHistory(
+        userId: number,
+        options: { page?: number; limit?: number },
+      ): Promise<{
+        matches: any[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>;
+    };
   }
 }
