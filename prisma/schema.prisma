@@ -50,6 +50,8 @@ model FriendRequest {
   id         Int      @id @default(autoincrement())
   senderId   Int
   receiverId Int
+  senderName String
+  receiverName String
   status     String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -57,7 +59,7 @@ model FriendRequest {
   sender   User @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
   receiver User @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  @@unique([senderId, receiverId])
+  @@unique([senderId, receiverId, senderName, receiverName])
   @@map("friend_requests")
 }
 

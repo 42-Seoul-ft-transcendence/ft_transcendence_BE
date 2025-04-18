@@ -66,7 +66,7 @@ declare module 'fastify' {
     };
 
     friendService: {
-      sendFriendRequest(senderId: number, receiverId: number): Promise<any>;
+      sendFriendRequest(senderId: number, receiverName: string): Promise<any>;
       acceptFriendRequest(
         userId: number,
         requestId: number,
