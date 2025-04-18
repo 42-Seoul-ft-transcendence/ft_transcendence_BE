@@ -43,13 +43,19 @@ export enum GlobalErrorCode {
   TOURNAMENT_NOT_JOINED = 'TOURNAMENT_007',
   TOURNAMENT_FULL = 'TOURNAMENT_008',
 
+  // 토너먼트 매치 관련 에러
+  TOURNAMENT_NOT_ENOUGH_PLAYERS = 'TOURNAMENT_009',
+  TOURNAMENT_MATCH_NOT_FOUND = 'TOURNAMENT_010',
+  TOURNAMENT_MATCH_NOT_AUTHORIZED = 'TOURNAMENT_011',
+  TOURNAMENT_MATCH_NOT_ENOUGH_PLAYERS = 'TOURNAMENT_012',
+  TOURNAMENT_MATCH_NO_WINNER = 'TOURNAMENT_013',
+
   // 매치 관련 에러
   MATCH_NOT_FOUND = 'MATCH_001',
   MATCH_SELF_PLAY = 'MATCH_002',
   MATCH_NOT_AUTHORIZED = 'MATCH_003',
   MATCH_INVALID_STATUS_TRANSITION = 'MATCH_004',
   MATCH_ALREADY_EXISTS = 'MATCH_005',
-  TOURNAMENT_MATCH_NOT_FOUND = 'MATCH_006',
 
   // 외부 API 관련 에러
   API_EXTERNAL_ERROR = 'API_001',
@@ -201,6 +207,27 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
     message: '토너먼트 참가 인원이 가득 찼습니다.',
   },
 
+  [GlobalErrorCode.TOURNAMENT_NOT_ENOUGH_PLAYERS]: {
+    statusCode: 400,
+    message: '토너먼트를 시작하기 위한 참가자가 충분하지 않습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_MATCH_NOT_FOUND]: {
+    statusCode: 404,
+    message: '토너먼트 매치를 찾을 수 없습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_MATCH_NOT_AUTHORIZED]: {
+    statusCode: 403,
+    message: '이 토너먼트 매치에 대한 권한이 없습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_MATCH_NOT_ENOUGH_PLAYERS]: {
+    statusCode: 400,
+    message: '토너먼트 매치를 시작하기 위한 플레이어가 충분하지 않습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_MATCH_NO_WINNER]: {
+    statusCode: 400,
+    message: '토너먼트 매치의 승자가 결정되지 않았습니다.',
+  },
+
   // 매치 관련 에러 매핑
   [GlobalErrorCode.MATCH_NOT_FOUND]: {
     statusCode: 404,
@@ -221,10 +248,6 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.MATCH_ALREADY_EXISTS]: {
     statusCode: 400,
     message: '해당 토너먼트 매치에 이미 게임이 생성되었습니다.',
-  },
-  [GlobalErrorCode.TOURNAMENT_MATCH_NOT_FOUND]: {
-    statusCode: 404,
-    message: '토너먼트 매치를 찾을 수 없습니다.',
   },
 
   // 외부 API 관련
