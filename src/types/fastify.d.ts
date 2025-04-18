@@ -172,5 +172,43 @@ declare module 'fastify' {
         totalPages: number;
       }>;
     };
+
+    // fastify.d.ts 파일에 추가
+    tournamentMatchService: {
+      startTournament(
+        userId: number,
+        tournamentId: number,
+      ): Promise<{
+        tournamentId: number;
+        status: string;
+        matches: any[];
+      }>;
+
+      getTournamentMatches(tournamentId: number): Promise<{
+        tournamentId: number;
+        matches: any[];
+      }>;
+
+      getTournamentBracket(tournamentId: number): Promise<{
+        tournamentId: number;
+        tournament: any;
+        rounds: Record<number, any[]>;
+      }>;
+
+      getTournamentMatch(tournamentId: number, matchId: number): Promise<any>;
+
+      startTournamentMatch(userId: number, tournamentId: number, matchId: number): Promise<any>;
+
+      completeTournamentMatch(
+        userId: number,
+        tournamentId: number,
+        matchId: number,
+      ): Promise<{
+        matchId: number;
+        status: string;
+        winnerId: number | null;
+        nextMatchId: number | null;
+      }>;
+    };
   }
 }

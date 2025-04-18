@@ -18,6 +18,7 @@ import tournamentRoute from './routes/tournament/tournament';
 import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
 import matchRoute from './routes/tournament/match';
+import tournamentMatchService from './plugins/tournament/tournamentMatchService';
 
 const fastify = Fastify({
   // logger: true,
@@ -41,6 +42,7 @@ await fastify.register(friendService);
 await fastify.register(adminService);
 await fastify.register(tournamentService);
 await fastify.register(matchService);
+await fastify.register(tournamentMatchService);
 
 // JWT 미들웨어 등록 (인증 필터)
 await fastify.register(jwtMiddleware);
