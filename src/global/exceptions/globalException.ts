@@ -33,6 +33,16 @@ export enum GlobalErrorCode {
   FRIEND_NOT_FOUND = 'FRIEND_007',
   FRIEND_SELF_DELETE = 'FRIEND_008',
 
+  // 토너먼트 관련 에러
+  TOURNAMENT_NOT_FOUND = 'TOURNAMENT_001',
+  TOURNAMENT_INVALID_TYPE = 'TOURNAMENT_002',
+  TOURNAMENT_NOT_AUTHORIZED = 'TOURNAMENT_003',
+  TOURNAMENT_INVALID_STATUS_TRANSITION = 'TOURNAMENT_004',
+  TOURNAMENT_ALREADY_STARTED = 'TOURNAMENT_005',
+  TOURNAMENT_ALREADY_JOINED = 'TOURNAMENT_006',
+  TOURNAMENT_NOT_JOINED = 'TOURNAMENT_007',
+  TOURNAMENT_FULL = 'TOURNAMENT_008',
+
   // 외부 API 관련 에러
   API_EXTERNAL_ERROR = 'API_001',
   API_GOOGLE_ERROR = 'API_002',
@@ -147,6 +157,40 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.FRIEND_SELF_DELETE]: {
     statusCode: 400,
     message: '자기 자신을 친구 목록에서 삭제할 수 없습니다.',
+  },
+
+  // 토너먼트 관련 에러 매핑
+  [GlobalErrorCode.TOURNAMENT_NOT_FOUND]: {
+    statusCode: 404,
+    message: '토너먼트를 찾을 수 없습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_INVALID_TYPE]: {
+    statusCode: 400,
+    message: '유효하지 않은 토너먼트 유형입니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_NOT_AUTHORIZED]: {
+    statusCode: 403,
+    message: '이 토너먼트에 대한 권한이 없습니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_INVALID_STATUS_TRANSITION]: {
+    statusCode: 400,
+    message: '유효하지 않은 토너먼트 상태 변경입니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_ALREADY_STARTED]: {
+    statusCode: 400,
+    message: '이미 시작된 토너먼트입니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_ALREADY_JOINED]: {
+    statusCode: 400,
+    message: '이미 참가 중인 토너먼트입니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_NOT_JOINED]: {
+    statusCode: 400,
+    message: '참가하지 않은 토너먼트입니다.',
+  },
+  [GlobalErrorCode.TOURNAMENT_FULL]: {
+    statusCode: 400,
+    message: '토너먼트 참가 인원이 가득 찼습니다.',
   },
 
   // 외부 API 관련

@@ -104,5 +104,30 @@ declare module 'fastify' {
         message: string;
       }>;
     };
+
+    // 토너먼트 서비스 추가
+    tournamentService: {
+      getTournaments(options: { page?: number; limit?: number; status?: string }): Promise<{
+        tournaments: any[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>;
+
+      createTournament(creatorId: number, data: { name: string; type: string }): Promise<any>;
+
+      getTournament(id: number): Promise<any>;
+
+      updateTournament(
+        userId: number,
+        id: number,
+        data: { name?: string; status?: string },
+      ): Promise<any>;
+
+      joinTournament(userId: number, tournamentId: number): Promise<any>;
+
+      leaveTournament(userId: number, tournamentId: number): Promise<any>;
+    };
   }
 }
