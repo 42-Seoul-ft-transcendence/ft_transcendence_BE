@@ -30,14 +30,11 @@ const friendRoute: FastifyPluginAsync = async (fastify) => {
       const { requestId } = request.params as { requestId: number };
       const { action } = request.body as { action: 'accept' | 'decline' };
 
-      let result;
       if (action === 'accept') {
-        result = await fastify.friendService.acceptFriendRequest(userId, requestId);
+        await fastify.friendService.acceptFriendRequest(userId, requestId);
       } else {
-        result = await fastify.friendService.declineFriendRequest(userId, requestId);
+        await fastify.friendService.declineFriendRequest(userId, requestId);
       }
-
-      return reply.send(result);
     },
   });
 
@@ -49,8 +46,7 @@ const friendRoute: FastifyPluginAsync = async (fastify) => {
       const userId = request.user.id;
       const { friendId } = request.params as { friendId: number };
 
-      const result = await fastify.friendService.deleteFriend(userId, friendId);
-      return reply.send(result);
+      await fastify.friendService.deleteFriend(userId, friendId);
     },
   });
 
