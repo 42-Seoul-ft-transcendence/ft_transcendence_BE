@@ -15,15 +15,6 @@ export default fp(
       if (senderId === receiverId) {
         throw new GlobalException(GlobalErrorCode.FRIEND_SELF_REQUEST);
       }
-
-      // 받는 사람이 존재하는지 확인
-      const receiver = await fastify.prisma.user.findUnique({
-        where: { id: receiverId },
-      });
-
-      if (!receiver) {
-        throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-      }
     };
 
     const checkExistingRelationship = async (senderId: number, receiverId: number) => {
@@ -56,18 +47,18 @@ export default fp(
 
     fastify.decorate('friendService', {
       async sendFriendRequest(senderId: number, receiverName: string) {
-        // 2) receiverName → receiverId 조회 및 존재 확인
+        // 1) receiverName → receiverId 조회 및 존재 확인
         const receiver = await fastify.prisma.user.findUnique({ where: { name: receiverName } });
         if (!receiver) {
           throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
         }
         const receiverId = receiver.id;
 
-        // 3) 친구 관계 중복 검사
+        // 2) 친구 관계 중복 검사
         await validateFriendRequest(senderId, receiverId);
         await checkExistingRelationship(senderId, receiverId);
 
-        // 4) 이미 보낸 요청 확인 (PENDING/DECLINED)
+        // 3) 이미 보낸 요청 확인 (PENDING/DECLINED)
         const existing = await fastify.prisma.friendRequest.findFirst({
           where: { senderId, receiverId },
         });
@@ -76,14 +67,13 @@ export default fp(
             throw new GlobalException(GlobalErrorCode.FRIEND_REQUEST_ALREADY_SENT);
           }
           // DECLINED 이면 재전송
-          const updated = await fastify.prisma.friendRequest.update({
+          return fastify.prisma.friendRequest.update({
             where: { id: existing.id },
-            data: { status: 'PENDING', updatedAt: new Date() },
+            data: { status: 'PENDING' },
           });
-          return { ...updated, message: '친구 요청이 다시 전송되었습니다.' };
         }
 
-        // 5) 역방향 요청 자동 수락
+        // 4) 역방향 요청 자동 수락
         const reverseQuest = await fastify.prisma.friendRequest.findFirst({
           where: { senderId: receiverId, receiverId: senderId },
         });
@@ -98,20 +88,17 @@ export default fp(
             senderId,
             receiverId,
             status: 'ACCEPTED',
-            createdAt: new Date(),
-            message: '상대방이 이미 친구 요청을 보냈습니다. 자동으로 친구가 되었습니다.',
           };
         }
 
-        // 6) 새 친구 요청 생성
-        const newRequest = await fastify.prisma.friendRequest.create({
+        // 5) 새 친구 요청 생성
+        return fastify.prisma.friendRequest.create({
           data: {
             senderId,
             receiverId,
             status: 'PENDING',
           },
         });
-        return { ...newRequest, message: '친구 요청이 전송되었습니다.' };
       },
 
       /**
