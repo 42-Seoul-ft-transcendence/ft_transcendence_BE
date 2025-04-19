@@ -3,58 +3,18 @@ import { FastifyInstance } from 'fastify';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
 
 export default fp(async (fastify: FastifyInstance) => {
-  // 의존성 확인
-  if (!fastify.prisma) {
-    throw new Error('Prisma plugin is required for userService');
-  }
-
   fastify.decorate('userService', {
     /**
-     * 현재 로그인한 사용자 정보 조회
-     */
-    async getCurrentUser(userId: number) {
-      const user = await fastify.prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          image: true,
-          twoFactorEnabled: true,
-          wins: true,
-          losses: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      });
-
-      if (!user) {
-        throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-      }
-
-      return user;
-    },
-
-    /**
-     * 특정 사용자 정보 조회 (제한된 정보)
+     * 사용자 조회
      */
     async getUserById(userId: number) {
-      const user = await fastify.prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          wins: true,
-          losses: true,
-        },
-      });
-
-      if (!user) {
-        throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-      }
-
-      return user;
+      return fastify.prisma.user
+        .findUniqueOrThrow({
+          where: { id: userId },
+        })
+        .catch(() => {
+          throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+        });
     },
 
     /**
@@ -76,19 +36,10 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 사용자 정보 업데이트
-      const updatedUser = await fastify.prisma.user.update({
+      await fastify.prisma.user.update({
         where: { id: userId },
         data: userData,
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          image: true,
-          updatedAt: true,
-        },
       });
-
-      return updatedUser;
     },
 
     /**

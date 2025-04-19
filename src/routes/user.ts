@@ -8,19 +8,7 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-
-      const user = await fastify.userService.getCurrentUser(userId);
-      return reply.send(user);
-    },
-  });
-
-  // 특정 사용자 정보 조회
-  fastify.get('/:id', {
-    schema: getUserByIdSchema,
-    handler: async (request, reply) => {
-      const { id } = request.params as { id: number };
-
-      const user = await fastify.userService.getUserById(id);
+      const user = await fastify.userService.getUserById(userId);
       return reply.send(user);
     },
   });
@@ -28,16 +16,10 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
   // 사용자 프로필 수정
   fastify.patch('', {
     schema: updateUserSchema,
-    handler: async (request, reply) => {
+    handler: async (request) => {
       const userId = request.user.id;
       const userData = request.body as { name?: string; image?: string | null };
-
-      const updatedUser = await fastify.userService.updateUser(userId, userData);
-
-      return reply.send({
-        ...updatedUser,
-        message: '프로필이 성공적으로 업데이트되었습니다.',
-      });
+      await fastify.userService.updateUser(userId, userData);
     },
   });
 };
