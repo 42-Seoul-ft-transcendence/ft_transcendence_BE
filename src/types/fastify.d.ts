@@ -53,9 +53,8 @@ declare module 'fastify' {
     };
 
     userService: {
-      getCurrentUser(userId: number): Promise<any>;
       getUserById(userId: number): Promise<any>;
-      updateUser(userId: number, userData: { name?: string; image?: string | null }): Promise<any>;
+      updateUser(userId: number, userData: { name?: string; image?: string | null });
       getUsers(options: { page?: number; limit?: number; search?: string }): Promise<{
         users: any[];
         total: number;

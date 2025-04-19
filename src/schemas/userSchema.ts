@@ -8,14 +8,11 @@ export const getUserSchema = {
       type: 'object',
       properties: {
         id: { type: 'number' },
-        email: { type: 'string' },
         name: { type: 'string' },
         image: { type: 'string', nullable: true },
         twoFactorEnabled: { type: 'boolean' },
         wins: { type: 'number' },
         losses: { type: 'number' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
       },
     },
   },
@@ -57,19 +54,6 @@ export const updateUserSchema = {
     properties: {
       name: { type: 'string', minLength: 2, maxLength: 30 },
       image: { type: 'string', nullable: true },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        id: { type: 'number' },
-        email: { type: 'string' },
-        name: { type: 'string' },
-        image: { type: 'string', nullable: true },
-        updatedAt: { type: 'string', format: 'date-time' },
-        message: { type: 'string' },
-      },
     },
   },
 };
