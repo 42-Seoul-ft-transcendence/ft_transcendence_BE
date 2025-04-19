@@ -1,4 +1,4 @@
-export interface GoogleUser {
+export interface GoogleUserInfo {
   sub: string;
   email: string;
   name: string;

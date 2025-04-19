@@ -5,7 +5,7 @@ import {
   deleteFriendSchema,
   getFriendsSchema,
   getPendingFriendRequestsSchema,
-} from '../schemas/friendSchema';
+} from '../../schemas/user/friendSchema';
 
 const friendRoute: FastifyPluginAsync = async (fastify) => {
   // 친구 요청 보내기

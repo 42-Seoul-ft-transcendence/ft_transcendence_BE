@@ -4,7 +4,7 @@ import {
   twoFactorVerifySchema,
   twoFactorAuthSchema,
   twoFactorDisableSchema,
-} from '../schemas/twoFactorAuthSchema';
+} from '../../schemas/auth/twoFactorAuthSchema';
 
 const twoFactorAuthRoute: FastifyPluginAsync = async (fastify) => {
   // 2FA 설정 초기화 (QR 코드 생성)
