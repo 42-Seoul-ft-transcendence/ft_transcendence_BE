@@ -2,6 +2,7 @@ import fp from 'fastify-plugin';
 import fetch from 'node-fetch';
 import { GOOGLE_USERINFO_URL } from '../../global/config';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
+import { GoogleUserInfo } from '../../types/auth';
 
 export default fp(async (fastify) => {
   fastify.decorate('googleAuthService', {
@@ -14,14 +15,12 @@ export default fp(async (fastify) => {
         throw new GlobalException(GlobalErrorCode.AUTH_INVALID_TOKEN);
       }
 
-      return await res.json();
+      return (await res.json()) as GoogleUserInfo;
     },
 
-    async findOrCreateUser(googleUser) {
-      const { sub: googleId, email, picture } = googleUser;
-
+    async findOrCreateUser(googleUserInfo) {
       const existingUser = await fastify.prisma.user.findUnique({
-        where: { googleId },
+        where: { googleId: googleUserInfo.sub },
       });
 
       if (existingUser) {
@@ -30,10 +29,10 @@ export default fp(async (fastify) => {
 
       const newUser = await fastify.prisma.user.create({
         data: {
-          email,
-          name: googleId,
-          googleId,
-          image: picture,
+          email: googleUserInfo.email,
+          name: googleUserInfo.sub,
+          googleId: googleUserInfo.sub,
+          image: googleUserInfo.picture,
           twoFactorEnabled: false,
         },
       });

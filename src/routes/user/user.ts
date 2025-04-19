@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { getUserSchema, getUserByIdSchema, updateUserSchema } from '../schemas/userSchema';
+import { getUserSchema, getUserByIdSchema, updateUserSchema } from '../../schemas/user/userSchema';
 
 const userRoute: FastifyPluginAsync = async (fastify) => {
   // 현재 로그인한 사용자 정보 조회

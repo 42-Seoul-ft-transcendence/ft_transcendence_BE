@@ -4,7 +4,7 @@ import {
   twoFactorVerifySchema,
   twoFactorAuthSchema,
   twoFactorDisableSchema,
-} from '../schemas/twoFactorAuthSchema';
+} from '../../schemas/auth/twoFactorAuthSchema';
 
 const twoFactorAuthRoute: FastifyPluginAsync = async (fastify) => {
   // 2FA 설정 초기화 (QR 코드 생성)
@@ -13,7 +13,6 @@ const twoFactorAuthRoute: FastifyPluginAsync = async (fastify) => {
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-
       const setupResult = await fastify.twoFactorAuthService.setupTwoFactor(userId);
       return reply.send(setupResult);
     },
@@ -26,14 +25,7 @@ const twoFactorAuthRoute: FastifyPluginAsync = async (fastify) => {
     handler: async (request, reply) => {
       const userId = request.user.id;
       const { token, secret } = request.body as { token: string; secret: string };
-
-      const verifyResult = await fastify.twoFactorAuthService.verifyAndEnableTwoFactor(
-        userId,
-        token,
-        secret,
-      );
-
-      return reply.send(verifyResult);
+      await fastify.twoFactorAuthService.verifyAndEnableTwoFactor(userId, token, secret);
     },
   });
 
@@ -52,10 +44,9 @@ const twoFactorAuthRoute: FastifyPluginAsync = async (fastify) => {
   fastify.delete('/2fa', {
     schema: twoFactorDisableSchema,
     preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
+    handler: async (request) => {
       const userId = request.user.id;
-      const disableResult = await fastify.twoFactorAuthService.disableTwoFactor(userId);
-      return reply.send(disableResult);
+      await fastify.twoFactorAuthService.disableTwoFactor(userId);
     },
   });
 };

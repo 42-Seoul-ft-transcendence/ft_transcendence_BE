@@ -1,4 +1,5 @@
 import 'fastify';
+import { GoogleUserInfo } from './auth';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -20,8 +21,8 @@ declare module 'fastify' {
     };
 
     googleAuthService: {
-      getGoogleUserInfo(googleAccessToken: string): Promise<any>;
-      findOrCreateUser(googleUser: any): Promise<{ user: any; isNewUser: boolean }>;
+      getGoogleUserInfo(googleAccessToken: string): Promise<GoogleUserInfo>;
+      findOrCreateUser(googleUser: GoogleUserInfo): Promise<{ user: any; isNewUser: boolean }>;
     };
 
     twoFactorAuthService: {

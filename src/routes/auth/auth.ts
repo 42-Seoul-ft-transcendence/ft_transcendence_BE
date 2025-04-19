@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-import { googleAuthSchema, refreshTokenSchema } from '../schemas/authSchema';
+import { googleAuthSchema, refreshTokenSchema } from '../../schemas/auth/authSchema';
+import { GoogleUserInfo } from '../../types/auth';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   fastify
@@ -9,15 +10,16 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         const { googleAccessToken } = request.body as { googleAccessToken: string };
 
         // 구글 유저 정보 가져오기
-        const googleUser = await fastify.googleAuthService.getGoogleUserInfo(googleAccessToken);
-        const { user, isNewUser } = await fastify.googleAuthService.findOrCreateUser(googleUser);
+        const googleUserInfo = await fastify.googleAuthService.getGoogleUserInfo(googleAccessToken);
+        const { user, isNewUser } =
+          await fastify.googleAuthService.findOrCreateUser(googleUserInfo);
 
         // 2FA가 활성화되어 있는지 확인
         if (user.twoFactorEnabled) {
           return reply.send({
-            requireTwoFactor: true,
             userId: user.id,
-            message: '2단계 인증이 필요합니다.',
+            isNewUser: false,
+            requireTFA: true,
           });
         }
 
@@ -27,8 +29,9 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         return reply.send({
           accessToken,
           refreshToken,
-          requireTwoFactor: false,
-          message: isNewUser ? '회원가입 성공' : '로그인 성공',
+          userId: user.id,
+          isNewUser: isNewUser,
+          requireTFA: false,
         });
       },
     })

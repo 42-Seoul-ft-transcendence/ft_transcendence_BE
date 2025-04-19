@@ -17,11 +17,7 @@ export const sendFriendRequestSchema = {
         id: { type: 'number' },
         senderId: { type: 'number' },
         receiverId: { type: 'number' },
-        senderName: { type: 'string' },
-        receiverName: { type: 'string' },
         status: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        message: { type: 'string' },
       },
     },
   },
@@ -30,6 +26,7 @@ export const sendFriendRequestSchema = {
 // 친구 요청 응답 스키마 (수락/거절)
 export const respondFriendRequestSchema = {
   summary: '친구 요청 응답 (수락/거절)',
+  description: '요청에 대한 응답 (accept: 수락, decline: 거절)',
   tags: ['Friend'],
   security: [{ bearerAuth: [] }],
   params: {
@@ -46,15 +43,6 @@ export const respondFriendRequestSchema = {
       action: { type: 'string', enum: ['accept', 'decline'] },
     },
   },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        message: { type: 'string' },
-      },
-    },
-  },
 };
 
 // 친구 삭제 스키마
@@ -67,15 +55,6 @@ export const deleteFriendSchema = {
     required: ['friendId'],
     properties: {
       friendId: { type: 'number' },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        message: { type: 'string' },
-      },
     },
   },
 };
