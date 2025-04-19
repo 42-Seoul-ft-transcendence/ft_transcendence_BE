@@ -61,7 +61,7 @@ jobs:
           sudo docker ps -a
 
       - name: Check Docker logs
-        run: sudo docker logs cogo || true
+        run: sudo docker logs ft_transcendence || true
 
       - name: Delete old docker image
         run: sudo docker system prune -f
