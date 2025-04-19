@@ -15,6 +15,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         // 2FA가 활성화되어 있는지 확인
         if (user.twoFactorEnabled) {
           return reply.send({
+            userId: user.id,
             isNewUser: false,
             requireTFA: true,
           });
@@ -26,6 +27,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         return reply.send({
           accessToken,
           refreshToken,
+          userId: user.id,
           isNewUser: isNewUser,
           requireTFA: false,
         });

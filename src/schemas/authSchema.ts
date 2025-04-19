@@ -1,5 +1,6 @@
 export const googleAuthSchema = {
   summary: '구글 로그인',
+  description: 'userId, isNewUser, requireTFA 필드를 항상 리턴합니다',
   tags: ['Auth'],
   body: {
     type: 'object',
@@ -12,8 +13,9 @@ export const googleAuthSchema = {
     200: {
       type: 'object',
       properties: {
-        accessToken: { type: 'string', default: null },
-        refreshToken: { type: 'string', default: null },
+        accessToken: { type: 'string' },
+        refreshToken: { type: 'string' },
+        userId: { type: 'number' },
         isNewUser: { type: 'boolean' },
         requireTFA: { type: 'boolean' },
       },
