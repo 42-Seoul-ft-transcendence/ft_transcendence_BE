@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { googleAuthSchema, refreshTokenSchema } from '../../schemas/auth/authSchema';
+import { GoogleUserInfo } from '../../types/auth';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   fastify
@@ -9,8 +10,9 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         const { googleAccessToken } = request.body as { googleAccessToken: string };
 
         // 구글 유저 정보 가져오기
-        const googleUser = await fastify.googleAuthService.getGoogleUserInfo(googleAccessToken);
-        const { user, isNewUser } = await fastify.googleAuthService.findOrCreateUser(googleUser);
+        const googleUserInfo = await fastify.googleAuthService.getGoogleUserInfo(googleAccessToken);
+        const { user, isNewUser } =
+          await fastify.googleAuthService.findOrCreateUser(googleUserInfo);
 
         // 2FA가 활성화되어 있는지 확인
         if (user.twoFactorEnabled) {
