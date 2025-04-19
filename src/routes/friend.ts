@@ -14,9 +14,9 @@ const friendRoute: FastifyPluginAsync = async (fastify) => {
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-      const { receiverId } = request.body as { receiverId: number };
+      const { receiverName } = request.body as { receiverName: string };
 
-      const result = await fastify.friendService.sendFriendRequest(userId, receiverId);
+      const result = await fastify.friendService.sendFriendRequest(userId, receiverName);
       return reply.send(result);
     },
   });

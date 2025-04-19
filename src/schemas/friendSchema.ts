@@ -5,9 +5,9 @@ export const sendFriendRequestSchema = {
   security: [{ bearerAuth: [] }],
   body: {
     type: 'object',
-    required: ['receiverId'],
+    required: ['receiverName'],
     properties: {
-      receiverId: { type: 'number' },
+      receiverName: { type: 'string' },
     },
   },
   response: {
@@ -17,6 +17,8 @@ export const sendFriendRequestSchema = {
         id: { type: 'number' },
         senderId: { type: 'number' },
         receiverId: { type: 'number' },
+        senderName: { type: 'string' },
+        receiverName: { type: 'string' },
         status: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
         message: { type: 'string' },
