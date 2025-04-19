@@ -56,7 +56,6 @@ export default fp(
 
     fastify.decorate('friendService', {
       async sendFriendRequest(senderId: number, receiverName: string) {
-
         // 2) receiverName → receiverId 조회 및 존재 확인
         const receiver = await fastify.prisma.user.findUnique({ where: { name: receiverName } });
         if (!receiver) {
