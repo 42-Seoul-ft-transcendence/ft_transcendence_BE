@@ -15,9 +15,8 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         // 2FA가 활성화되어 있는지 확인
         if (user.twoFactorEnabled) {
           return reply.send({
-            requireTwoFactor: true,
-            userId: user.id,
-            message: '2단계 인증이 필요합니다.',
+            isNewUser: false,
+            requireTFA: true,
           });
         }
 
@@ -27,8 +26,8 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
         return reply.send({
           accessToken,
           refreshToken,
-          requireTwoFactor: false,
-          message: isNewUser ? '회원가입 성공' : '로그인 성공',
+          isNewUser: isNewUser,
+          requireTFA: false,
         });
       },
     })
