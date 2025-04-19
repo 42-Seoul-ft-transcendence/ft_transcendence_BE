@@ -23,19 +23,6 @@ export const twoFactorVerifySchema = {
       secret: { type: 'string' },
     },
   },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        backupCodes: {
-          type: 'array',
-          items: { type: 'string' },
-          nullable: true,
-        },
-      },
-    },
-  },
 };
 
 export const twoFactorAuthSchema = {
@@ -63,12 +50,4 @@ export const twoFactorAuthSchema = {
 export const twoFactorDisableSchema = {
   summary: '2FA 비활성화',
   tags: ['Auth'],
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-      },
-    },
-  },
 };
