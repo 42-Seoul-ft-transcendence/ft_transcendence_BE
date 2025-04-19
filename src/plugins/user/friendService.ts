@@ -56,15 +56,6 @@ export default fp(
 
     fastify.decorate('friendService', {
       async sendFriendRequest(senderId: number, receiverName: string) {
-        // 1) sender 존재 및 자기 자신 요청 금지
-        const sender = await fastify.prisma.user.findUnique({ where: { id: senderId } });
-        if (!sender) {
-          throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-        }
-        if (sender.name === receiverName) {
-          throw new GlobalException(GlobalErrorCode.FRIEND_SELF_REQUEST);
-        }
-
         // 2) receiverName → receiverId 조회 및 존재 확인
         const receiver = await fastify.prisma.user.findUnique({ where: { name: receiverName } });
         if (!receiver) {
@@ -93,37 +84,34 @@ export default fp(
         }
 
         // 5) 역방향 요청 자동 수락
-        const reverse = await fastify.prisma.friendRequest.findFirst({
+        const reverseQuest = await fastify.prisma.friendRequest.findFirst({
           where: { senderId: receiverId, receiverId: senderId },
         });
-        if (reverse?.status === 'PENDING') {
+        if (reverseQuest?.status === 'PENDING') {
           await createFriendship(senderId, receiverId);
           await fastify.prisma.friendRequest.update({
-            where: { id: reverse.id },
+            where: { id: reverseQuest.id },
             data: { status: 'ACCEPTED' },
           });
           return {
-            id: reverse.id,
+            id: reverseQuest.id,
             senderId,
             receiverId,
-            senderName: sender.name,
-            receiverName,
             status: 'ACCEPTED',
-            createdAt: reverse.createdAt,
-            updatedAt: new Date(),
+            createdAt: new Date(),
             message: '상대방이 이미 친구 요청을 보냈습니다. 자동으로 친구가 되었습니다.',
           };
         }
 
         // 6) 새 친구 요청 생성
-        const newReq = await fastify.prisma.friendRequest.create({
+        const newRequest = await fastify.prisma.friendRequest.create({
           data: {
             senderId,
             receiverId,
             status: 'PENDING',
           },
         });
-        return { ...newReq, message: '친구 요청이 전송되었습니다.' };
+        return { ...newRequest, message: '친구 요청이 전송되었습니다.' };
       },
 
       /**
