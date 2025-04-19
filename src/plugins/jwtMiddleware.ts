@@ -28,23 +28,6 @@ const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
     }
   };
 
-  fastify.addHook('onRequest', async (request) => {
-    // 1) 인증이 필요없는 path 예외 처리
-    if (
-      request.url.startsWith('/ft/ping') ||
-      request.url.startsWith('/ft/api/auth/refresh') ||
-      request.url.startsWith('/ft/api/auth/login/google') ||
-      request.url.startsWith('/ft/api/auth/2fa/authenticate') ||
-      request.url.startsWith('/ft/documentation') ||
-      request.url.startsWith('/ft/api/admin/token') ||
-      request.url.startsWith('/ft/documentation/json')
-    ) {
-      return;
-    }
-
-    await authenticate(request);
-  });
-
   fastify.decorate('authenticate', authenticate);
   done();
 };
