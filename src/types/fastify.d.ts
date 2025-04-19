@@ -1,5 +1,6 @@
 import 'fastify';
 import { GoogleUserInfo } from './auth';
+import { UserUpdateResponse } from './user';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -55,7 +56,7 @@ declare module 'fastify' {
 
     userService: {
       getUserById(userId: number): Promise<any>;
-      updateUser(userId: number, userData: { name?: string; image?: string | null });
+      updateUser(userId: number, userData: { name?: string; image?: string | null }): Promise<any>;
       getUsers(options: { page?: number; limit?: number; search?: string }): Promise<{
         users: any[];
         total: number;

@@ -36,7 +36,7 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 사용자 정보 업데이트
-      await fastify.prisma.user.update({
+      return fastify.prisma.user.update({
         where: { id: userId },
         data: userData,
       });
