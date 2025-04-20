@@ -205,25 +205,14 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 토너먼트 탈퇴
-      const updatedTournament = await fastify.prisma.tournament.update({
+      await fastify.prisma.tournament.update({
         where: { id: tournamentId },
         data: {
           participants: {
             disconnect: { id: userId },
           },
         },
-        include: {
-          participants: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
-        },
       });
-
-      return updatedTournament;
     },
   });
 });

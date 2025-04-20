@@ -215,16 +215,4 @@ export const leaveTournamentSchema = {
       id: { type: 'number' },
     },
   },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        ...tournamentResponseProps,
-        participants: {
-          type: 'array',
-          items: simpleParticipantSchema,
-        },
-      },
-    },
-  },
 };

@@ -75,12 +75,10 @@ const tournamentRoute: FastifyPluginAsync = async (fastify) => {
   fastify.delete('/:id/join', {
     schema: leaveTournamentSchema,
     preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
+    handler: async (request) => {
       const userId = request.user.id;
       const { id } = request.params as { id: number };
-
-      const result = await fastify.tournamentService.leaveTournament(userId, id);
-      return reply.send(result);
+      await fastify.tournamentService.leaveTournament(userId, id);
     },
   });
 

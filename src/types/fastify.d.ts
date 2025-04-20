@@ -122,7 +122,7 @@ declare module 'fastify' {
 
       joinTournament(userId: number, tournamentId: number): Promise<any>;
 
-      leaveTournament(userId: number, tournamentId: number): Promise<any>;
+      leaveTournament(userId: number, tournamentId: number);
     };
 
     matchService: {
