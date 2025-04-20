@@ -18,8 +18,8 @@ const adminRoute: FastifyPluginAsync = async (fastify) => {
     schema: getUsersSchema,
     handler: async (request, reply) => {
       const query = request.query as {
-        page?: number;
-        limit?: number;
+        page: number;
+        limit: number;
         search?: string;
       };
 

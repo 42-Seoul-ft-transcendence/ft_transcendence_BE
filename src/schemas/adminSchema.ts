@@ -27,11 +27,10 @@ export const generateAdminTokenSchema = {
 export const getUsersSchema = {
   summary: '사용자 목록 조회 (테스트용)',
   tags: ['Admin'],
-  security: [{ bearerAuth: [] }],
   querystring: {
     type: 'object',
     properties: {
-      page: { type: 'number', default: 1 },
+      page: { type: 'number', default: 0 },
       limit: { type: 'number', default: 10 },
       search: { type: 'string' },
     },
