@@ -30,36 +30,6 @@ const matchSchema = {
   },
 };
 
-// 토너먼트 시작 스키마
-export const startTournamentSchema = {
-  summary: '토너먼트 시작 및 대진표 생성',
-  tags: ['Tournament'],
-  security: [{ bearerAuth: [] }],
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'number' },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        tournamentId: { type: 'number' },
-        status: { type: 'string' },
-        matches: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: tournamentMatchResponseProps,
-          },
-        },
-      },
-    },
-  },
-};
-
 // 토너먼트 매치 목록 조회 스키마
 export const getTournamentMatchesSchema = {
   summary: '토너먼트 매치 목록 조회',

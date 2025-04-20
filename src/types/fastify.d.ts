@@ -168,17 +168,7 @@ declare module 'fastify' {
       }>;
     };
 
-    // fastify.d.ts 파일에 추가
     tournamentMatchService: {
-      startTournament(
-        userId: number,
-        tournamentId: number,
-      ): Promise<{
-        tournamentId: number;
-        status: string;
-        matches: any[];
-      }>;
-
       getTournamentMatches(tournamentId: number): Promise<{
         tournamentId: number;
         matches: any[];

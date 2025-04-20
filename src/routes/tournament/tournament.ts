@@ -12,7 +12,6 @@ import {
   getTournamentMatchesSchema,
   getTournamentMatchSchema,
   startTournamentMatchSchema,
-  startTournamentSchema,
 } from '../../schemas/tournament/tournamentMatchSchema';
 
 const tournamentRoute: FastifyPluginAsync = async (fastify) => {
@@ -81,18 +80,6 @@ const tournamentRoute: FastifyPluginAsync = async (fastify) => {
       const { id } = request.params as { id: number };
 
       const result = await fastify.tournamentService.leaveTournament(userId, id);
-      return reply.send(result);
-    },
-  });
-
-  fastify.post('/:id/start', {
-    schema: startTournamentSchema,
-    preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
-      const userId = request.user.id;
-      const { id } = request.params as { id: number };
-
-      const result = await fastify.tournamentMatchService.startTournament(userId, id);
       return reply.send(result);
     },
   });
