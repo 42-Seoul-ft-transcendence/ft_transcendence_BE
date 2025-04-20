@@ -18,6 +18,7 @@ const simpleParticipantSchema = {
 // 토너먼트 목록 조회 스키마
 export const getTournamentsSchema = {
   summary: '토너먼트 목록 조회',
+  description: 'PENDING 상태의 2P or 4P 토너먼트를 조회합니다',
   tags: ['Tournament'],
   querystring: {
     type: 'object',

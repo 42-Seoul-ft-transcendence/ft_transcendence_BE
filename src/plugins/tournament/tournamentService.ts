@@ -12,7 +12,7 @@ export default fp(async (fastify: FastifyInstance) => {
       const limit = options.limit;
 
       // 검색 조건 설정
-      const where = { type: options.type };
+      const where = { type: options.type, status: 'PENDING' };
 
       // 토너먼트 목록 조회
       const tournaments = await fastify.prisma.tournament.findMany({
@@ -24,9 +24,6 @@ export default fp(async (fastify: FastifyInstance) => {
               name: true,
               image: true,
             },
-          },
-          _count: {
-            select: { participants: true },
           },
         },
         take: limit,
