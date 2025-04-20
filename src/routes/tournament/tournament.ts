@@ -3,7 +3,6 @@ import {
   getTournamentsSchema,
   createTournamentSchema,
   getTournamentSchema,
-  updateTournamentSchema,
   joinTournamentSchema,
   leaveTournamentSchema,
 } from '../../schemas/tournament/tournamentSchema';
@@ -20,12 +19,11 @@ const tournamentRoute: FastifyPluginAsync = async (fastify) => {
   // 토너먼트 목록 조회
   fastify.get('', {
     schema: getTournamentsSchema,
-    preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const query = request.query as {
-        page?: number;
-        limit?: number;
-        status?: string;
+        page: number;
+        limit: number;
+        type: string;
       };
 
       const result = await fastify.tournamentService.getTournaments(query);
@@ -57,23 +55,6 @@ const tournamentRoute: FastifyPluginAsync = async (fastify) => {
       const { id } = request.params as { id: number };
 
       const result = await fastify.tournamentService.getTournament(id);
-      return reply.send(result);
-    },
-  });
-
-  // 토너먼트 수정
-  fastify.patch('/:id', {
-    schema: updateTournamentSchema,
-    preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
-      const userId = request.user.id;
-      const { id } = request.params as { id: number };
-      const body = request.body as {
-        name?: string;
-        status?: string;
-      };
-
-      const result = await fastify.tournamentService.updateTournament(userId, id, body);
       return reply.send(result);
     },
   });

@@ -3,9 +3,6 @@ const tournamentResponseProps = {
   id: { type: 'number' },
   name: { type: 'string' },
   type: { type: 'string' },
-  status: { type: 'string' },
-  startTime: { type: 'string', format: 'date-time', nullable: true },
-  endTime: { type: 'string', format: 'date-time', nullable: true },
 };
 
 // 간단한 참가자 정보
@@ -24,10 +21,11 @@ export const getTournamentsSchema = {
   tags: ['Tournament'],
   querystring: {
     type: 'object',
+    required: ['type'],
     properties: {
-      page: { type: 'number', default: 1 },
+      page: { type: 'number', default: 0 },
       limit: { type: 'number', default: 20 },
-      status: { type: 'string', enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED'] },
+      type: { type: 'string', enum: ['2P', '4P'] },
     },
   },
   response: {
@@ -43,12 +41,6 @@ export const getTournamentsSchema = {
               participants: {
                 type: 'array',
                 items: simpleParticipantSchema,
-              },
-              _count: {
-                type: 'object',
-                properties: {
-                  participants: { type: 'number' },
-                },
               },
             },
           },
