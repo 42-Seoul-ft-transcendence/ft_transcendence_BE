@@ -21,6 +21,7 @@
   "dependencies": {
     "@fastify/swagger": "^9.4.2",
     "@fastify/swagger-ui": "^5.2.2",
+    "@fastify/websocket": "^11.0.2",
     "@prisma/client": "^6.5.0",
     "@types/crypto-js": "^4.2.2",
     "crypto-js": "^4.2.0",
@@ -38,6 +39,8 @@
     "@types/node-fetch": "^2.6.12",
     "@types/qrcode": "^1.5.5",
     "@types/speakeasy": "^2.0.10",
+    "@types/websocket": "^1.0.10",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.57.1",

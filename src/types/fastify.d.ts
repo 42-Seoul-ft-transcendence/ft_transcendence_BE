@@ -120,12 +120,6 @@ declare module 'fastify' {
 
       getTournament(id: number): Promise<any>;
 
-      updateTournament(
-        userId: number,
-        id: number,
-        data: { name?: string; status?: string },
-      ): Promise<any>;
-
       joinTournament(userId: number, tournamentId: number): Promise<any>;
 
       leaveTournament(userId: number, tournamentId: number): Promise<any>;

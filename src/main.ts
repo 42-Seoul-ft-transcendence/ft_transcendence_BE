@@ -19,6 +19,7 @@ import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
 import matchRoute from './routes/tournament/match';
 import tournamentMatchService from './plugins/tournament/tournamentMatchService';
+import fastifyWebsocket from '@fastify/websocket';
 
 const fastify = Fastify({
   // logger: true,
@@ -30,8 +31,10 @@ fastify.setErrorHandler(exceptionHandler);
 // 데이터베이스 연결
 await fastify.register(prismaPlugin);
 
-// Swagger 문서화
+// Config 플러그인 등록
 await fastify.register(swagger);
+await fastify.register(fastifyWebsocket);
+await fastify.register(jwtMiddleware);
 
 // 서비스 플러그인 등록
 await fastify.register(authService);
@@ -43,9 +46,6 @@ await fastify.register(adminService);
 await fastify.register(tournamentService);
 await fastify.register(matchService);
 await fastify.register(tournamentMatchService);
-
-// JWT 미들웨어 등록 (인증 필터)
-await fastify.register(jwtMiddleware);
 
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/ft/api/auth' });
@@ -59,6 +59,14 @@ await fastify.register(matchRoute, { prefix: '/ft/api/matches' });
 // health check api
 fastify.get('/ft/ping', async () => {
   return 'pong\n';
+});
+
+fastify.register(async function (fastify) {
+  fastify.get('/ft/websocket', { websocket: true }, (socket) => {
+    socket.on('message', () => {
+      socket.send('hi from server');
+    });
+  });
 });
 
 const start = async () => {
