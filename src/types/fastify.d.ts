@@ -145,33 +145,5 @@ declare module 'fastify' {
         totalPages: number;
       }>;
     };
-
-    tournamentMatchService: {
-      getTournamentMatches(tournamentId: number): Promise<{
-        tournamentId: number;
-        matches: any[];
-      }>;
-
-      getTournamentBracket(tournamentId: number): Promise<{
-        tournamentId: number;
-        tournament: any;
-        rounds: Record<number, any[]>;
-      }>;
-
-      getTournamentMatch(tournamentId: number, matchId: number): Promise<any>;
-
-      startTournamentMatch(userId: number, tournamentId: number, matchId: number): Promise<any>;
-
-      completeTournamentMatch(
-        userId: number,
-        tournamentId: number,
-        matchId: number,
-      ): Promise<{
-        matchId: number;
-        status: string;
-        winnerId: number | null;
-        nextMatchId: number | null;
-      }>;
-    };
   }
 }

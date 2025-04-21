@@ -6,13 +6,6 @@ import {
   joinTournamentSchema,
   leaveTournamentSchema,
 } from '../../schemas/tournament/tournamentSchema';
-import {
-  completeTournamentMatchSchema,
-  getTournamentBracketSchema,
-  getTournamentMatchesSchema,
-  getTournamentMatchSchema,
-  startTournamentMatchSchema,
-} from '../../schemas/tournament/tournamentMatchSchema';
 
 const tournamentRoute: FastifyPluginAsync = async (fastify) => {
   // 토너먼트 목록 조회
@@ -79,69 +72,6 @@ const tournamentRoute: FastifyPluginAsync = async (fastify) => {
       const userId = request.user.id;
       const { id } = request.params as { id: number };
       await fastify.tournamentService.leaveTournament(userId, id);
-    },
-  });
-
-  // 토너먼트 매치 목록 조회
-  fastify.get('/:id/matches', {
-    schema: getTournamentMatchesSchema,
-    handler: async (request, reply) => {
-      const { id } = request.params as { id: number };
-
-      const result = await fastify.tournamentMatchService.getTournamentMatches(id);
-      return reply.send(result);
-    },
-  });
-
-  // 토너먼트 대진표 조회
-  fastify.get('/:id/bracket', {
-    schema: getTournamentBracketSchema,
-    handler: async (request, reply) => {
-      const { id } = request.params as { id: number };
-
-      const result = await fastify.tournamentMatchService.getTournamentBracket(id);
-      return reply.send(result);
-    },
-  });
-
-  // 토너먼트 매치 상세 조회
-  fastify.get('/:id/matches/:matchId', {
-    schema: getTournamentMatchSchema,
-    handler: async (request, reply) => {
-      const { id, matchId } = request.params as { id: number; matchId: number };
-
-      const result = await fastify.tournamentMatchService.getTournamentMatch(id, matchId);
-      return reply.send(result);
-    },
-  });
-
-  // 토너먼트 매치 시작
-  fastify.post('/:id/matches/:matchId/start', {
-    schema: startTournamentMatchSchema,
-    preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
-      const userId = request.user.id;
-      const { id, matchId } = request.params as { id: number; matchId: number };
-
-      const result = await fastify.tournamentMatchService.startTournamentMatch(userId, id, matchId);
-      return reply.send(result);
-    },
-  });
-
-  // 토너먼트 매치 완료
-  fastify.post('/:id/matches/:matchId/complete', {
-    schema: completeTournamentMatchSchema,
-    preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
-      const userId = request.user.id;
-      const { id, matchId } = request.params as { id: number; matchId: number };
-
-      const result = await fastify.tournamentMatchService.completeTournamentMatch(
-        userId,
-        id,
-        matchId,
-      );
-      return reply.send(result);
     },
   });
 };

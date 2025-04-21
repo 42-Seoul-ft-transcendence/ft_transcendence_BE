@@ -87,27 +87,24 @@ export default fp(async (fastify: FastifyInstance) => {
               id: true,
               name: true,
               image: true,
-              wins: true,
-              losses: true,
             },
           },
           matches: {
             include: {
-              players: {
-                select: {
-                  id: true,
-                  name: true,
-                  image: true,
+              matchUsers: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      image: true,
+                    },
+                  },
                 },
               },
-              match: {
-                select: {
-                  id: true,
-                  status: true,
-                  player1Score: true,
-                  player2Score: true,
-                },
-              },
+            },
+            orderBy: {
+              round: 'asc',
             },
           },
         },
@@ -117,7 +114,36 @@ export default fp(async (fastify: FastifyInstance) => {
         throw new GlobalException(GlobalErrorCode.TOURNAMENT_NOT_FOUND);
       }
 
-      return tournament;
+      // 응답 데이터 포맷팅
+      const formattedTournament = {
+        id: tournament.id,
+        name: tournament.name,
+        type: tournament.type,
+        status: tournament.status,
+        createdAt: tournament.createdAt,
+        updatedAt: tournament.updatedAt,
+        participants: tournament.participants.map((user) => ({
+          id: user.id,
+          name: user.name,
+          image: user.image,
+        })),
+        matches: tournament.matches.map((match) => ({
+          id: match.id,
+          round: match.round,
+          status: match.status,
+          createdAt: match.createdAt,
+          updatedAt: match.updatedAt,
+          players: match.matchUsers.map((mu) => ({
+            id: mu.user.id,
+            name: mu.user.name,
+            image: mu.user.image,
+            score: mu.score,
+            isWinner: mu.isWinner,
+          })),
+        })),
+      };
+
+      return formattedTournament;
     },
 
     /**

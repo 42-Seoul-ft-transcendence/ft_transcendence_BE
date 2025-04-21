@@ -17,7 +17,6 @@ import adminService from './plugins/admin/adminService';
 import tournamentRoute from './routes/tournament/tournament';
 import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
-import tournamentMatchService from './plugins/tournament/tournamentMatchService';
 import fastifyWebsocket from '@fastify/websocket';
 
 const fastify = Fastify({
@@ -44,7 +43,6 @@ await fastify.register(friendService);
 await fastify.register(adminService);
 await fastify.register(tournamentService);
 await fastify.register(matchService);
-await fastify.register(tournamentMatchService);
 
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/ft/api/auth' });
