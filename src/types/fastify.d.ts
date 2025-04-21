@@ -1,6 +1,5 @@
 import 'fastify';
 import { GoogleUserInfo } from './auth';
-import { UserUpdateResponse } from './user';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -10,6 +9,8 @@ declare module 'fastify' {
   }
 
   interface FastifyInstance {
+    matchSockets: Map<string, Map<string, WebSocket>>;
+
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
 
     authService: {
