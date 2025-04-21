@@ -3,22 +3,16 @@ import fp from 'fastify-plugin';
 import { GlobalException, GlobalErrorCode } from '../../global/exceptions/globalException';
 
 export default fp(async (fastify: FastifyInstance) => {
-  // 의존성 확인
-  if (!fastify.prisma) {
-    throw new Error('Prisma plugin is required for tournamentService');
-  }
-
   fastify.decorate('tournamentService', {
     /**
      * 토너먼트 목록 조회
      */
-    async getTournaments(options: { page?: number; limit?: number; status?: string }) {
-      const page = options.page || 1;
-      const limit = options.limit || 20;
-      const skip = (page - 1) * limit;
+    async getTournaments(options: { page: number; limit: number; type: string }) {
+      const page = options.page;
+      const limit = options.limit;
 
       // 검색 조건 설정
-      const where = options.status ? { status: options.status } : {};
+      const where = { type: options.type, status: 'PENDING' };
 
       // 토너먼트 목록 조회
       const tournaments = await fastify.prisma.tournament.findMany({
@@ -31,19 +25,13 @@ export default fp(async (fastify: FastifyInstance) => {
               image: true,
             },
           },
-          _count: {
-            select: { participants: true },
-          },
         },
-        skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
       });
 
       // 총 토너먼트 수 조회
-      const total = await fastify.prisma.tournament.count({
-        where,
-      });
+      const total = await fastify.prisma.tournament.count({ where });
 
       return {
         tournaments,
@@ -118,8 +106,6 @@ export default fp(async (fastify: FastifyInstance) => {
                   status: true,
                   player1Score: true,
                   player2Score: true,
-                  startTime: true,
-                  endTime: true,
                 },
               },
             },
@@ -132,66 +118,6 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       return tournament;
-    },
-
-    /**
-     * 토너먼트 수정
-     */
-    async updateTournament(userId: number, id: number, data: { name?: string; status?: string }) {
-      // 토너먼트 존재 확인
-      const tournament = await fastify.prisma.tournament.findUnique({
-        where: { id },
-        include: {
-          participants: true,
-        },
-      });
-
-      if (!tournament) {
-        throw new GlobalException(GlobalErrorCode.TOURNAMENT_NOT_FOUND);
-      }
-
-      // 권한 확인 (첫 번째 참가자가 생성자)
-      const isCreator = tournament.participants.some((p) => p.id === userId);
-      if (!isCreator) {
-        throw new GlobalException(GlobalErrorCode.TOURNAMENT_NOT_AUTHORIZED);
-      }
-
-      // 상태 변경 유효성 검사
-      if (data.status) {
-        const validStatusTransitions: { [key: string]: string[] } = {
-          PENDING: ['IN_PROGRESS', 'COMPLETED'],
-          IN_PROGRESS: ['COMPLETED'],
-          COMPLETED: [],
-        };
-
-        if (!validStatusTransitions[tournament.status].includes(data.status)) {
-          throw new GlobalException(GlobalErrorCode.TOURNAMENT_INVALID_STATUS_TRANSITION);
-        }
-      }
-
-      // 토너먼트 업데이트
-      const updatedTournament = await fastify.prisma.tournament.update({
-        where: { id },
-        data: {
-          ...(data.name && { name: data.name }),
-          ...(data.status && {
-            status: data.status,
-            ...(data.status === 'IN_PROGRESS' && { startTime: new Date() }),
-            ...(data.status === 'COMPLETED' && { endTime: new Date() }),
-          }),
-        },
-        include: {
-          participants: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
-        },
-      });
-
-      return updatedTournament;
     },
 
     /**
@@ -277,25 +203,14 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 토너먼트 탈퇴
-      const updatedTournament = await fastify.prisma.tournament.update({
+      await fastify.prisma.tournament.update({
         where: { id: tournamentId },
         data: {
           participants: {
             disconnect: { id: userId },
           },
         },
-        include: {
-          participants: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
-        },
       });
-
-      return updatedTournament;
     },
   });
 });

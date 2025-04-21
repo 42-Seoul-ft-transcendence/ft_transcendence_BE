@@ -25,38 +25,7 @@ const matchSchema = {
     status: { type: 'string' },
     player1Score: { type: 'number' },
     player2Score: { type: 'number' },
-    startTime: { type: 'string', format: 'date-time', nullable: true },
-    endTime: { type: 'string', format: 'date-time', nullable: true },
-  },
-};
-
-// 토너먼트 시작 스키마
-export const startTournamentSchema = {
-  summary: '토너먼트 시작 및 대진표 생성',
-  tags: ['Tournament'],
-  security: [{ bearerAuth: [] }],
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'number' },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        tournamentId: { type: 'number' },
-        status: { type: 'string' },
-        matches: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: tournamentMatchResponseProps,
-          },
-        },
-      },
-    },
+    date: { type: 'string', format: 'date', nullable: true },
   },
 };
 
@@ -184,8 +153,7 @@ export const getTournamentMatchSchema = {
             status: { type: 'string' },
             player1Score: { type: 'number' },
             player2Score: { type: 'number' },
-            startTime: { type: 'string', format: 'date-time', nullable: true },
-            endTime: { type: 'string', format: 'date-time', nullable: true },
+            date: { type: 'string', format: 'date', nullable: true },
             gameLogs: {
               type: 'array',
               items: {
@@ -246,8 +214,7 @@ export const startTournamentMatchSchema = {
         status: { type: 'string' },
         player1Score: { type: 'number' },
         player2Score: { type: 'number' },
-        startTime: { type: 'string', format: 'date-time', nullable: true },
-        endTime: { type: 'string', format: 'date-time', nullable: true },
+        date: { type: 'string', format: 'date', nullable: true },
         players: {
           type: 'array',
           items: simplePlayerSchema,

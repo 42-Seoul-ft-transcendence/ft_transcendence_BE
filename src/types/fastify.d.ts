@@ -57,7 +57,7 @@ declare module 'fastify' {
     userService: {
       getUserById(userId: number): Promise<any>;
       updateUser(userId: number, userData: { name?: string; image?: string | null }): Promise<any>;
-      getUsers(options: { page?: number; limit?: number; search?: string }): Promise<{
+      getUsers(options: { page: number; limit: number; search?: string }): Promise<{
         users: any[];
         total: number;
         page: number;
@@ -82,7 +82,7 @@ declare module 'fastify' {
       ): Promise<{ success: boolean; message: string }>;
       getFriends(
         userId: number,
-        options: { page?: number; limit?: number; search?: string },
+        options: { page: number; limit: number; search?: string },
       ): Promise<{
         friends: any[];
         total: number;
@@ -108,7 +108,7 @@ declare module 'fastify' {
 
     // 토너먼트 서비스 추가
     tournamentService: {
-      getTournaments(options: { page?: number; limit?: number; status?: string }): Promise<{
+      getTournaments(options: { page: number; limit: number; type: string }): Promise<{
         tournaments: any[];
         total: number;
         page: number;
@@ -120,19 +120,13 @@ declare module 'fastify' {
 
       getTournament(id: number): Promise<any>;
 
-      updateTournament(
-        userId: number,
-        id: number,
-        data: { name?: string; status?: string },
-      ): Promise<any>;
-
       joinTournament(userId: number, tournamentId: number): Promise<any>;
 
-      leaveTournament(userId: number, tournamentId: number): Promise<any>;
+      leaveTournament(userId: number, tournamentId: number);
     };
 
     matchService: {
-      getMatches(options: { page?: number; limit?: number; status?: string }): Promise<{
+      getMatches(options: { page: number; limit: number; status?: string }): Promise<{
         matches: any[];
         total: number;
         page: number;
@@ -164,7 +158,7 @@ declare module 'fastify' {
 
       getUserMatchHistory(
         userId: number,
-        options: { page?: number; limit?: number },
+        options: { page: number; limit: number },
       ): Promise<{
         matches: any[];
         total: number;
@@ -174,17 +168,7 @@ declare module 'fastify' {
       }>;
     };
 
-    // fastify.d.ts 파일에 추가
     tournamentMatchService: {
-      startTournament(
-        userId: number,
-        tournamentId: number,
-      ): Promise<{
-        tournamentId: number;
-        status: string;
-        matches: any[];
-      }>;
-
       getTournamentMatches(tournamentId: number): Promise<{
         tournamentId: number;
         matches: any[];

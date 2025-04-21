@@ -45,16 +45,13 @@ export default fp(async (fastify: FastifyInstance) => {
     /**
      * 사용자 목록 조회 (페이지네이션 및 검색 기능 포함)
      */
-    async getUsers(options: { page?: number; limit?: number; search?: string }) {
-      const page = options.page || 1;
-      const limit = options.limit || 10;
-      const skip = (page - 1) * limit;
+    async getUsers(options: { page: number; limit: number; search?: string }) {
+      const page = options.page;
+      const limit = options.limit;
 
       // 검색 조건 설정
       const where = options.search
-        ? {
-            OR: [{ name: { contains: options.search } }, { email: { contains: options.search } }],
-          }
+        ? { OR: [{ name: { contains: options.search } }, { email: { contains: options.search } }] }
         : {};
 
       // 사용자 목록 조회
@@ -67,7 +64,6 @@ export default fp(async (fastify: FastifyInstance) => {
           wins: true,
           losses: true,
         },
-        skip,
         take: limit,
         orderBy: { name: 'asc' },
       });

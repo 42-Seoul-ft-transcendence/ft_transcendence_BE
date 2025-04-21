@@ -12,10 +12,9 @@ export default fp(async (fastify: FastifyInstance) => {
     /**
      * 매치 목록 조회
      */
-    async getMatches(options: { page?: number; limit?: number; status?: string }) {
-      const page = options.page || 1;
-      const limit = options.limit || 20;
-      const skip = (page - 1) * limit;
+    async getMatches(options: { page: number; limit: number; status?: string }) {
+      const page = options.page;
+      const limit = options.limit;
 
       // 검색 조건 설정
       const where = options.status ? { status: options.status } : {};
@@ -43,9 +42,8 @@ export default fp(async (fastify: FastifyInstance) => {
             },
           },
         },
-        skip,
         take: limit,
-        orderBy: { startTime: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       // 총 매치 수 조회
@@ -261,12 +259,7 @@ export default fp(async (fastify: FastifyInstance) => {
       const updatedMatch = await fastify.prisma.match.update({
         where: { id },
         data: {
-          ...(data.status && {
-            status: data.status,
-            ...(data.status === 'IN_PROGRESS' && { startTime: new Date() }),
-            ...(data.status === 'COMPLETED' && { endTime: new Date() }),
-            ...(data.status === 'ABANDONED' && { endTime: new Date() }),
-          }),
+          ...(data.status && { status: data.status }),
           ...(data.player1Score !== undefined && { player1Score: data.player1Score }),
           ...(data.player2Score !== undefined && { player2Score: data.player2Score }),
           ...(data.gameState && { gameState: JSON.stringify(data.gameState) }),
@@ -351,10 +344,9 @@ export default fp(async (fastify: FastifyInstance) => {
     /**
      * 사용자 매치 히스토리 조회
      */
-    async getUserMatchHistory(userId: number, options: { page?: number; limit?: number }) {
-      const page = options.page || 1;
-      const limit = options.limit || 20;
-      const skip = (page - 1) * limit;
+    async getUserMatchHistory(userId: number, options: { page: number; limit: number }) {
+      const page = options.page;
+      const limit = options.limit;
 
       // 사용자 확인
       const user = await fastify.prisma.user.findUnique({
@@ -392,9 +384,8 @@ export default fp(async (fastify: FastifyInstance) => {
             },
           },
         },
-        skip,
         take: limit,
-        orderBy: { endTime: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       // 총 매치 수 조회

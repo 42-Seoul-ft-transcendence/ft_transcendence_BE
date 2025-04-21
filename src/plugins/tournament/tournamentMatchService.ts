@@ -125,7 +125,6 @@ export default fp(async (fastify: FastifyInstance) => {
       where: { id: tournamentId },
       data: {
         status: 'IN_PROGRESS',
-        startTime: new Date(),
       },
     });
 
@@ -180,39 +179,6 @@ export default fp(async (fastify: FastifyInstance) => {
 
   fastify.decorate('tournamentMatchService', {
     /**
-     * 토너먼트 시작 및 대진표 생성
-     */
-    async startTournament(userId: number, tournamentId: number) {
-      // 토너먼트 존재 및 권한 확인
-      const tournament = await fastify.prisma.tournament.findUnique({
-        where: { id: tournamentId },
-        include: {
-          participants: true,
-        },
-      });
-
-      if (!tournament) {
-        throw new GlobalException(GlobalErrorCode.TOURNAMENT_NOT_FOUND);
-      }
-
-      // 권한 확인 (첫 번째 참가자가 생성자로 간주)
-      const isCreator =
-        tournament.participants.length > 0 && tournament.participants[0].id === userId;
-      if (!isCreator) {
-        throw new GlobalException(GlobalErrorCode.TOURNAMENT_NOT_AUTHORIZED);
-      }
-
-      // 토너먼트 매치 생성
-      const tournamentMatches = await createTournamentBracket(tournamentId);
-
-      return {
-        tournamentId,
-        status: 'IN_PROGRESS',
-        matches: tournamentMatches,
-      };
-    },
-
-    /**
      * 토너먼트 매치 목록 조회
      */
     async getTournamentMatches(tournamentId: number) {
@@ -242,8 +208,7 @@ export default fp(async (fastify: FastifyInstance) => {
               status: true,
               player1Score: true,
               player2Score: true,
-              startTime: true,
-              endTime: true,
+              createdAt: true,
             },
           },
         },
@@ -295,8 +260,6 @@ export default fp(async (fastify: FastifyInstance) => {
               status: true,
               player1Score: true,
               player2Score: true,
-              startTime: true,
-              endTime: true,
             },
           },
           previousMatches: {
@@ -351,8 +314,6 @@ export default fp(async (fastify: FastifyInstance) => {
               status: true,
               player1Score: true,
               player2Score: true,
-              startTime: true,
-              endTime: true,
               gameLogs: {
                 orderBy: { timestamp: 'asc' },
               },
@@ -497,7 +458,6 @@ export default fp(async (fastify: FastifyInstance) => {
         where: { id: tournamentMatch.match.id },
         data: {
           status: 'COMPLETED',
-          endTime: new Date(),
         },
       });
 
@@ -525,7 +485,6 @@ export default fp(async (fastify: FastifyInstance) => {
             where: { id: tournamentId },
             data: {
               status: 'COMPLETED',
-              endTime: new Date(),
             },
           });
         }

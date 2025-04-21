@@ -3,9 +3,6 @@ const tournamentResponseProps = {
   id: { type: 'number' },
   name: { type: 'string' },
   type: { type: 'string' },
-  status: { type: 'string' },
-  startTime: { type: 'string', format: 'date-time', nullable: true },
-  endTime: { type: 'string', format: 'date-time', nullable: true },
 };
 
 // 간단한 참가자 정보
@@ -21,13 +18,15 @@ const simpleParticipantSchema = {
 // 토너먼트 목록 조회 스키마
 export const getTournamentsSchema = {
   summary: '토너먼트 목록 조회',
+  description: 'PENDING 상태의 2P or 4P 토너먼트를 조회합니다',
   tags: ['Tournament'],
   querystring: {
     type: 'object',
+    required: ['type'],
     properties: {
-      page: { type: 'number', default: 1 },
+      page: { type: 'number', default: 0 },
       limit: { type: 'number', default: 20 },
-      status: { type: 'string', enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED'] },
+      type: { type: 'string', enum: ['2P', '4P'] },
     },
   },
   response: {
@@ -43,12 +42,6 @@ export const getTournamentsSchema = {
               participants: {
                 type: 'array',
                 items: simpleParticipantSchema,
-              },
-              _count: {
-                type: 'object',
-                properties: {
-                  participants: { type: 'number' },
-                },
               },
             },
           },
@@ -139,8 +132,7 @@ export const getTournamentSchema = {
                   status: { type: 'string' },
                   player1Score: { type: 'number' },
                   player2Score: { type: 'number' },
-                  startTime: { type: 'string', format: 'date-time', nullable: true },
-                  endTime: { type: 'string', format: 'date-time', nullable: true },
+                  date: { type: 'string', format: 'date', nullable: true },
                 },
               },
             },
@@ -220,18 +212,6 @@ export const leaveTournamentSchema = {
     required: ['id'],
     properties: {
       id: { type: 'number' },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        ...tournamentResponseProps,
-        participants: {
-          type: 'array',
-          items: simpleParticipantSchema,
-        },
-      },
     },
   },
 };

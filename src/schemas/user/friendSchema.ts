@@ -67,7 +67,7 @@ export const getFriendsSchema = {
   querystring: {
     type: 'object',
     properties: {
-      page: { type: 'number', default: 1 },
+      page: { type: 'number', default: 0 },
       limit: { type: 'number', default: 20 },
       search: { type: 'string' },
     },
