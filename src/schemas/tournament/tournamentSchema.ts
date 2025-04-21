@@ -157,6 +157,7 @@ export const getTournamentSchema = {
 // 토너먼트 참가 스키마
 export const joinTournamentSchema = {
   summary: '토너먼트 참가',
+  description: '토너먼트 참가와 동시에 웹소켓에 연결하여 매치(Match)에 참여 필요',
   tags: ['Tournament'],
   security: [{ bearerAuth: [] }], // 토너먼트 참가에는 인증 필요
   params: {
