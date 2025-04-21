@@ -1,3 +1,41 @@
+// 플레이어 응답 스키마
+const playerResponseSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'number' },
+    name: { type: 'string' },
+    image: { type: 'string', nullable: true },
+  },
+};
+
+// 매치 플레이어 응답 스키마
+const matchPlayerResponseSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'number' },
+    name: { type: 'string' },
+    image: { type: 'string', nullable: true },
+    score: { type: 'number' },
+    isWinner: { type: 'boolean' },
+  },
+};
+
+// 매치 응답 스키마
+const matchResponseSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'number' },
+    round: { type: 'number' },
+    status: { type: 'string' },
+    createdAt: { type: 'string', format: 'date-time' },
+    updatedAt: { type: 'string', format: 'date-time' },
+    players: {
+      type: 'array',
+      items: matchPlayerResponseSchema,
+    },
+  },
+};
+
 // 토너먼트 공통 응답 속성
 const tournamentResponseProps = {
   id: { type: 'number' },
@@ -97,79 +135,19 @@ export const getTournamentSchema = {
     200: {
       type: 'object',
       properties: {
-        ...tournamentResponseProps,
+        id: { type: 'number' },
+        name: { type: 'string' },
+        type: { type: 'string' },
+        status: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
         participants: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' },
-              name: { type: 'string' },
-              image: { type: 'string', nullable: true },
-              wins: { type: 'number' },
-              losses: { type: 'number' },
-            },
-          },
+          items: playerResponseSchema,
         },
         matches: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' },
-              round: { type: 'number' },
-              matchOrder: { type: 'number' },
-              status: { type: 'string' },
-              players: {
-                type: 'array',
-                items: simpleParticipantSchema,
-              },
-              match: {
-                type: 'object',
-                nullable: true,
-                properties: {
-                  id: { type: 'number' },
-                  status: { type: 'string' },
-                  player1Score: { type: 'number' },
-                  player2Score: { type: 'number' },
-                  date: { type: 'string', format: 'date', nullable: true },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
-
-// 토너먼트 수정 스키마
-export const updateTournamentSchema = {
-  summary: '토너먼트 수정',
-  tags: ['Tournament'],
-  security: [{ bearerAuth: [] }], // 토너먼트 수정에는 인증 필요
-  params: {
-    type: 'object',
-    required: ['id'],
-    properties: {
-      id: { type: 'number' },
-    },
-  },
-  body: {
-    type: 'object',
-    properties: {
-      name: { type: 'string', minLength: 1, maxLength: 100 },
-      status: { type: 'string', enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED'] },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        ...tournamentResponseProps,
-        participants: {
-          type: 'array',
-          items: simpleParticipantSchema,
+          items: matchResponseSchema,
         },
       },
     },

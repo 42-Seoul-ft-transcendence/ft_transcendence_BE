@@ -101,25 +101,27 @@ export const getMatchesSchema = {
           items: {
             type: 'object',
             properties: {
-              ...matchResponseProps,
+              id: { type: 'number' },
+              tournamentId: { type: 'number' },
+              tournamentName: { type: 'string' },
+              tournamentType: { type: 'string' },
+              round: { type: 'number' },
+              status: { type: 'string' },
               players: {
                 type: 'array',
-                items: simplePlayerSchema,
-              },
-              tournamentMatch: {
-                type: 'object',
-                nullable: true,
-                properties: {
-                  tournament: {
-                    type: 'object',
-                    properties: {
-                      id: { type: 'number' },
-                      name: { type: 'string' },
-                      type: { type: 'string' },
-                    },
+                items: {
+                  type: 'object',
+                  properties: {
+                    userId: { type: 'number' },
+                    userName: { type: 'string' },
+                    userImage: { type: 'string', nullable: true },
+                    score: { type: 'number' },
+                    isWinner: { type: 'boolean' },
                   },
                 },
               },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
             },
           },
         },
