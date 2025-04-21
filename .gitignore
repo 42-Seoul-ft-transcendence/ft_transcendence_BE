@@ -1,56 +1,56 @@
-# Dependency directories
+# === Dependency directories ===
 node_modules/
 npm-debug.log
 
-# TypeScript output
+# === TypeScript output ===
 dist/
 build/
 
-# Environment variables
+# === Environment variables ===
 .env
+.env.local
+.env.*.local
 
-# IDE files
+# === IDE/editor settings ===
 .idea/
 .vscode/
 *.sublime-project
 *.sublime-workspace
 
-# OS files
+# === OS-specific files ===
 .DS_Store
 Thumbs.db
 
-# Logs
+# === Logs ===
 logs/
 *.log
 
-# Coverage directory
+# === Code coverage ===
 coverage/
 
-# SQLite database files
-data/
+# === SQLite databases ===
+prisma/data/*.db
+prisma/data/*.db-journal
 *.sqlite
 *.sqlite3
-*.db
 
-# Prisma
-migrations/
-*.db-journal
+# === Prisma client cache ===
+# migrations/는 커밋 대상이므로 포함하지 않음!
+!.prisma/client/
 
-# Debug files
+# === Debug & temp files ===
 .pnp.*
 .pnp.js
-
-# Temp files
 .temp/
 .tmp/
 tmp/
 
-# Build artifacts
-.turbo
+# === Build artifacts ===
+.turbo/
 
-# Swagger generated docs
+# === Swagger generated docs ===
 swagger-static/
 
-# Cache
-.npm
+# === Cache ===
+.npm/
 .eslintcache
