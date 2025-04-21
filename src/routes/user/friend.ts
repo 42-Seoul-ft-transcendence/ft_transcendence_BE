@@ -57,8 +57,8 @@ const friendRoute: FastifyPluginAsync = async (fastify) => {
     handler: async (request, reply) => {
       const userId = request.user.id;
       const query = request.query as {
-        page?: number;
-        limit?: number;
+        page: number;
+        limit: number;
         search?: string;
       };
 

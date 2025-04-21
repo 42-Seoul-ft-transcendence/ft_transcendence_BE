@@ -210,11 +210,10 @@ export default fp(
        */
       async getFriends(
         userId: number,
-        options: { page?: number; limit?: number; search?: string },
+        options: { page: number; limit: number; search?: string },
       ) {
-        const page = options.page || 1;
-        const limit = options.limit || 20;
-        const skip = (page - 1) * limit;
+        const page = options.page;
+        const limit = options.limit;
 
         // 검색 조건 설정
         const where = options.search ? { friend: { name: { contains: options.search } } } : {};
@@ -236,7 +235,6 @@ export default fp(
               },
             },
           },
-          skip,
           take: limit,
           orderBy: { friend: { name: 'asc' } },
         });

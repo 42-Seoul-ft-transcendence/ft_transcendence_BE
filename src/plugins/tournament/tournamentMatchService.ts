@@ -125,7 +125,6 @@ export default fp(async (fastify: FastifyInstance) => {
       where: { id: tournamentId },
       data: {
         status: 'IN_PROGRESS',
-        startTime: new Date(),
       },
     });
 
@@ -209,8 +208,7 @@ export default fp(async (fastify: FastifyInstance) => {
               status: true,
               player1Score: true,
               player2Score: true,
-              startTime: true,
-              endTime: true,
+              createdAt: true,
             },
           },
         },
@@ -262,8 +260,6 @@ export default fp(async (fastify: FastifyInstance) => {
               status: true,
               player1Score: true,
               player2Score: true,
-              startTime: true,
-              endTime: true,
             },
           },
           previousMatches: {
@@ -318,8 +314,6 @@ export default fp(async (fastify: FastifyInstance) => {
               status: true,
               player1Score: true,
               player2Score: true,
-              startTime: true,
-              endTime: true,
               gameLogs: {
                 orderBy: { timestamp: 'asc' },
               },
@@ -464,7 +458,6 @@ export default fp(async (fastify: FastifyInstance) => {
         where: { id: tournamentMatch.match.id },
         data: {
           status: 'COMPLETED',
-          endTime: new Date(),
         },
       });
 
@@ -492,7 +485,6 @@ export default fp(async (fastify: FastifyInstance) => {
             where: { id: tournamentId },
             data: {
               status: 'COMPLETED',
-              endTime: new Date(),
             },
           });
         }

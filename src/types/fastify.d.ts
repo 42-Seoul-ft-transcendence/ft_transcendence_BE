@@ -57,7 +57,7 @@ declare module 'fastify' {
     userService: {
       getUserById(userId: number): Promise<any>;
       updateUser(userId: number, userData: { name?: string; image?: string | null }): Promise<any>;
-      getUsers(options: { page?: number; limit?: number; search?: string }): Promise<{
+      getUsers(options: { page: number; limit: number; search?: string }): Promise<{
         users: any[];
         total: number;
         page: number;
@@ -82,7 +82,7 @@ declare module 'fastify' {
       ): Promise<{ success: boolean; message: string }>;
       getFriends(
         userId: number,
-        options: { page?: number; limit?: number; search?: string },
+        options: { page: number; limit: number; search?: string },
       ): Promise<{
         friends: any[];
         total: number;
@@ -108,7 +108,7 @@ declare module 'fastify' {
 
     // 토너먼트 서비스 추가
     tournamentService: {
-      getTournaments(options: { page?: number; limit?: number; status?: string }): Promise<{
+      getTournaments(options: { page: number; limit: number; type: string }): Promise<{
         tournaments: any[];
         total: number;
         page: number;
@@ -126,7 +126,7 @@ declare module 'fastify' {
     };
 
     matchService: {
-      getMatches(options: { page?: number; limit?: number; status?: string }): Promise<{
+      getMatches(options: { page: number; limit: number; status?: string }): Promise<{
         matches: any[];
         total: number;
         page: number;
@@ -158,7 +158,7 @@ declare module 'fastify' {
 
       getUserMatchHistory(
         userId: number,
-        options: { page?: number; limit?: number },
+        options: { page: number; limit: number },
       ): Promise<{
         matches: any[];
         total: number;

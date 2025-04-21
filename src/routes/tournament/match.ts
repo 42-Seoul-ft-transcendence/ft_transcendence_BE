@@ -1,6 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
 import {
-  getMatchesSchema,
   createMatchSchema,
   getMatchSchema,
   getMatchStateSchema,
@@ -9,21 +8,6 @@ import {
 } from '../../schemas/tournament/matchSchema';
 
 const matchRoute: FastifyPluginAsync = async (fastify) => {
-  // 매치 목록 조회
-  fastify.get('', {
-    schema: getMatchesSchema,
-    handler: async (request, reply) => {
-      const query = request.query as {
-        page?: number;
-        limit?: number;
-        status?: string;
-      };
-
-      const result = await fastify.matchService.getMatches(query);
-      return reply.send(result);
-    },
-  });
-
   // 매치 생성
   fastify.post('', {
     schema: createMatchSchema,
@@ -88,8 +72,8 @@ const matchRoute: FastifyPluginAsync = async (fastify) => {
     handler: async (request, reply) => {
       const userId = request.user.id;
       const query = request.query as {
-        page?: number;
-        limit?: number;
+        page: number;
+        limit: number;
       };
 
       const result = await fastify.matchService.getUserMatchHistory(userId, query);

@@ -4,8 +4,7 @@ const matchResponseProps = {
   status: { type: 'string' },
   player1Score: { type: 'number' },
   player2Score: { type: 'number' },
-  startTime: { type: 'string', format: 'date-time', nullable: true },
-  endTime: { type: 'string', format: 'date-time', nullable: true },
+  date: { type: 'string', format: 'date', nullable: true },
 };
 
 // 간단한 플레이어 정보
@@ -15,58 +14,6 @@ const simplePlayerSchema = {
     id: { type: 'number' },
     name: { type: 'string' },
     image: { type: 'string', nullable: true },
-  },
-};
-
-// 매치 목록 조회 스키마
-export const getMatchesSchema = {
-  summary: '매치 목록 조회',
-  tags: ['Match'],
-  querystring: {
-    type: 'object',
-    properties: {
-      page: { type: 'number', default: 1 },
-      limit: { type: 'number', default: 20 },
-      status: { type: 'string', enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'ABANDONED'] },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        matches: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              ...matchResponseProps,
-              players: {
-                type: 'array',
-                items: simplePlayerSchema,
-              },
-              tournamentMatch: {
-                type: 'object',
-                nullable: true,
-                properties: {
-                  tournament: {
-                    type: 'object',
-                    properties: {
-                      id: { type: 'number' },
-                      name: { type: 'string' },
-                      type: { type: 'string' },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        total: { type: 'number' },
-        page: { type: 'number' },
-        limit: { type: 'number' },
-        totalPages: { type: 'number' },
-      },
-    },
   },
 };
 
@@ -267,7 +214,7 @@ export const getUserMatchHistorySchema = {
   querystring: {
     type: 'object',
     properties: {
-      page: { type: 'number', default: 1 },
+      page: { type: 'number', default: 0 },
       limit: { type: 'number', default: 20 },
     },
   },

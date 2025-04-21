@@ -25,8 +25,7 @@ const matchSchema = {
     status: { type: 'string' },
     player1Score: { type: 'number' },
     player2Score: { type: 'number' },
-    startTime: { type: 'string', format: 'date-time', nullable: true },
-    endTime: { type: 'string', format: 'date-time', nullable: true },
+    date: { type: 'string', format: 'date', nullable: true },
   },
 };
 
@@ -154,8 +153,7 @@ export const getTournamentMatchSchema = {
             status: { type: 'string' },
             player1Score: { type: 'number' },
             player2Score: { type: 'number' },
-            startTime: { type: 'string', format: 'date-time', nullable: true },
-            endTime: { type: 'string', format: 'date-time', nullable: true },
+            date: { type: 'string', format: 'date', nullable: true },
             gameLogs: {
               type: 'array',
               items: {
@@ -216,8 +214,7 @@ export const startTournamentMatchSchema = {
         status: { type: 'string' },
         player1Score: { type: 'number' },
         player2Score: { type: 'number' },
-        startTime: { type: 'string', format: 'date-time', nullable: true },
-        endTime: { type: 'string', format: 'date-time', nullable: true },
+        date: { type: 'string', format: 'date', nullable: true },
         players: {
           type: 'array',
           items: simplePlayerSchema,

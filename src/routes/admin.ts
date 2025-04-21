@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { generateAdminTokenSchema, getUsersSchema } from '../schemas/adminSchema';
+import { getMatchesSchema } from '../schemas/adminSchema';
 
 const adminRoute: FastifyPluginAsync = async (fastify) => {
   // 어드민 토큰 생성 엔드포인트 (테스트용)
@@ -14,7 +15,7 @@ const adminRoute: FastifyPluginAsync = async (fastify) => {
   });
 
   // 사용자 목록 조회
-  fastify.get('/users/list', {
+  fastify.get('/users', {
     schema: getUsersSchema,
     handler: async (request, reply) => {
       const query = request.query as {
@@ -24,6 +25,21 @@ const adminRoute: FastifyPluginAsync = async (fastify) => {
       };
 
       const result = await fastify.userService.getUsers(query);
+      return reply.send(result);
+    },
+  });
+
+  // 매치 목록 조회
+  fastify.get('/matches', {
+    schema: getMatchesSchema,
+    handler: async (request, reply) => {
+      const query = request.query as {
+        page: number;
+        limit: number;
+        status?: string;
+      };
+
+      const result = await fastify.matchService.getMatches(query);
       return reply.send(result);
     },
   });

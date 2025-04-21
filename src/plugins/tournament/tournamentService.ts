@@ -106,8 +106,6 @@ export default fp(async (fastify: FastifyInstance) => {
                   status: true,
                   player1Score: true,
                   player2Score: true,
-                  startTime: true,
-                  endTime: true,
                 },
               },
             },
