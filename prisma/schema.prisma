@@ -35,9 +35,8 @@ model User {
   friends                Friendship[]    @relation("UserFriends")
   friendsOf              Friendship[]    @relation("FriendsOfUser")
 
-  playerMatches     Match[]           @relation("PlayerMatches")
-  tournaments       Tournament[]      @relation("TournamentParticipants")
-  tournamentMatches TournamentMatch[] @relation("TournamentMatchPlayers")
+  tournaments       Tournament[] @relation("TournamentParticipants")
+  tournamentMatches MatchUser[]  @relation("TournamentMatchPlayers")
 
   // Online status
   isOnline Boolean  @default(false)
@@ -84,67 +83,39 @@ model Tournament {
 
   // Relations
   participants User[]            @relation("TournamentParticipants")
-  matches      TournamentMatch[]
+  matches      Match[]
 
   @@map("tournaments")
 }
 
-model TournamentMatch {
-  id           Int      @id @default(autoincrement())
-  tournamentId Int
-  round        Int // Round number (1, 2, 3, etc.)
-  matchOrder   Int // Order within the round (for displaying bracket position)
-  status       String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  players    User[]     @relation("TournamentMatchPlayers")
-  match      Match? // The actual Pong match
-
-  // Parent-child relationship for advancing in brackets
-  nextMatchId     Int?
-  nextMatch       TournamentMatch?  @relation("MatchProgression", fields: [nextMatchId], references: [id])
-  previousMatches TournamentMatch[] @relation("MatchProgression")
-
-  @@map("tournament_matches")
-}
-
 model Match {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  status    String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, ABANDONED
+  id            Int       @id @default(autoincrement())
+  tournamentId  Int
+  round         Int       @default(1) // 1: 예선, 2: 결승 등
+  status        String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  // Game scores
-  player1Score Int @default(0)
-  player2Score Int @default(0)
-
-  // Tournament connection
-  tournamentMatchId Int?             @unique
-  tournamentMatch   TournamentMatch? @relation(fields: [tournamentMatchId], references: [id])
-
-  // Players
-  players User[] @relation("PlayerMatches")
-
-  // Game state (can be stored as JSON)
-  gameState String? // For storing current ball position, player positions, etc. as JSON string
-
-  // 추가: GameLog와의 관계 정의
-  gameLogs GameLog[]
+  // 관계
+  tournament    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  matchUsers    MatchUser[]
 
   @@map("matches")
 }
 
-model GameLog {
-  id        Int      @id @default(autoincrement())
+model MatchUser {
+  id        Int       @id @default(autoincrement())
   matchId   Int
-  timestamp DateTime @default(now())
-  event     String // GOAL, PADDLE_HIT, GAME_START, GAME_END, etc.
-  data      String? // Additional event data as JSON string
+  userId    Int
+  score     Int       @default(0)
+  isWinner  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  // Relations
+  match     Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user      User      @relation("TournamentMatchPlayers", fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("game_logs")
+  @@unique([matchId, userId])
+  @@map("match_users")
 }
