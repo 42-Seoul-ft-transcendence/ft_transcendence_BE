@@ -208,10 +208,7 @@ export default fp(
       /**
        * 친구 목록 조회
        */
-      async getFriends(
-        userId: number,
-        options: { page: number; limit: number; search?: string },
-      ) {
+      async getFriends(userId: number, options: { page: number; limit: number; search?: string }) {
         const page = options.page;
         const limit = options.limit;
 
