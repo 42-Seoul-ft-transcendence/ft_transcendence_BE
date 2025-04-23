@@ -150,11 +150,25 @@ export default fp(async (fastify: FastifyInstance) => {
      * 토너먼트 참가
      */
     async joinTournament(userId: number, tournamentId: number) {
-      // 토너먼트 존재 확인
+      // 사용자 확인
+      const user = await fastify.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+      }
+
+      // 토너먼트 확인
       const tournament = await fastify.prisma.tournament.findUnique({
         where: { id: tournamentId },
         include: {
           participants: true,
+          matches: {
+            where: {
+              status: { in: ['PENDING', 'IN_PROGRESS'] },
+            },
+          },
         },
       });
 
@@ -168,18 +182,20 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 이미 참가 중인지 확인
-      const isAlreadyJoined = tournament.participants.some((p) => p.id === userId);
+      const isAlreadyJoined = tournament.participants.some(
+        (participant) => participant.id === userId,
+      );
       if (isAlreadyJoined) {
         throw new GlobalException(GlobalErrorCode.TOURNAMENT_ALREADY_JOINED);
       }
 
-      // 참가자 수 제한 확인
-      const maxParticipants = tournament.type === '2P' ? 8 : 16; // 예시 제한
+      // 토너먼트 타입에 따른 최대 참가자 수 확인
+      const maxParticipants = tournament.type === '2P' ? 2 : 4;
       if (tournament.participants.length >= maxParticipants) {
         throw new GlobalException(GlobalErrorCode.TOURNAMENT_FULL);
       }
 
-      // 토너먼트 참가
+      // 토너먼트에 참가
       const updatedTournament = await fastify.prisma.tournament.update({
         where: { id: tournamentId },
         data: {
@@ -198,18 +214,105 @@ export default fp(async (fastify: FastifyInstance) => {
         },
       });
 
-      return updatedTournament;
+      // 참가자가 다 모였는지 확인하고, 모였다면 토너먼트 시작
+      if (updatedTournament.participants.length === maxParticipants) {
+        // 토너먼트 상태 업데이트
+        await fastify.prisma.tournament.update({
+          where: { id: tournamentId },
+          data: { status: 'IN_PROGRESS' },
+        });
+
+        // 2P 토너먼트인 경우 매치 1개 생성
+        if (tournament.type === '2P') {
+          const match = await fastify.prisma.match.create({
+            data: {
+              tournamentId,
+              round: 1,
+              status: 'PENDING',
+              matchUsers: {
+                create: updatedTournament.participants.map((participant) => ({
+                  userId: participant.id,
+                  score: 0,
+                  isWinner: false,
+                })),
+              },
+            },
+          });
+        }
+        // 4P 토너먼트인 경우 예선 매치 2개 생성
+        else if (tournament.type === '4P') {
+          // 첫 번째 예선 매치 (참가자 1, 2)
+          await fastify.prisma.match.create({
+            data: {
+              tournamentId,
+              round: 1,
+              status: 'PENDING',
+              matchUsers: {
+                create: [
+                  {
+                    userId: updatedTournament.participants[0].id,
+                    score: 0,
+                    isWinner: false,
+                  },
+                  {
+                    userId: updatedTournament.participants[1].id,
+                    score: 0,
+                    isWinner: false,
+                  },
+                ],
+              },
+            },
+          });
+
+          // 두 번째 예선 매치 (참가자 3, 4)
+          await fastify.prisma.match.create({
+            data: {
+              tournamentId,
+              round: 1,
+              status: 'PENDING',
+              matchUsers: {
+                create: [
+                  {
+                    userId: updatedTournament.participants[2].id,
+                    score: 0,
+                    isWinner: false,
+                  },
+                  {
+                    userId: updatedTournament.participants[3].id,
+                    score: 0,
+                    isWinner: false,
+                  },
+                ],
+              },
+            },
+          });
+        }
+      }
     },
 
     /**
      * 토너먼트 탈퇴
      */
     async leaveTournament(userId: number, tournamentId: number) {
-      // 토너먼트 존재 확인
+      // 사용자 확인
+      const user = await fastify.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+      }
+
+      // 토너먼트 확인
       const tournament = await fastify.prisma.tournament.findUnique({
         where: { id: tournamentId },
         include: {
           participants: true,
+          matches: {
+            where: {
+              status: { in: ['PENDING', 'IN_PROGRESS'] },
+            },
+          },
         },
       });
 
@@ -223,12 +326,12 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 참가 중인지 확인
-      const isJoined = tournament.participants.some((p) => p.id === userId);
+      const isJoined = tournament.participants.some((participant) => participant.id === userId);
       if (!isJoined) {
         throw new GlobalException(GlobalErrorCode.TOURNAMENT_NOT_JOINED);
       }
 
-      // 토너먼트 탈퇴
+      // 토너먼트에서 탈퇴
       await fastify.prisma.tournament.update({
         where: { id: tournamentId },
         data: {

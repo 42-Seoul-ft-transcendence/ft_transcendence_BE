@@ -18,6 +18,7 @@ import tournamentRoute from './routes/tournament/tournament';
 import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
 import fastifyWebsocket from '@fastify/websocket';
+import matchRoutes from './routes/tournament/match';
 
 const fastify = Fastify({
   // logger: true,
@@ -51,6 +52,8 @@ await fastify.register(userRoute, { prefix: '/ft/api/users' });
 await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
 await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
 await fastify.register(tournamentRoute, { prefix: '/ft/api/tournaments' });
+
+fastify.register(matchRoutes, { prefix: '/ft' });
 
 // health check api
 fastify.get('/ft/ping', async () => {
