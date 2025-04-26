@@ -19,11 +19,13 @@ export function generateRefreshToken(userId: number) {
 /**
  * JWT 토큰 검증
  * @param token JWT 토큰
- * @returns 디코딩된 페이로드 또는 null (유효하지 않은 경우)
+ * @returns userId
+ * @throws GlobalErrorCode.AUTH_INVALID_TOKEN
  */
-export function verifyToken(token: string): JwtPayload | null {
+export function verifyToken(token: string): number {
   try {
-    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    return decoded.userId;
   } catch (error) {
     throw new GlobalException(GlobalErrorCode.AUTH_INVALID_TOKEN);
   }
