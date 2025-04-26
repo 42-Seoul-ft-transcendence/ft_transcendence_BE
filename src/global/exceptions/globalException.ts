@@ -54,7 +54,7 @@ export enum GlobalErrorCode {
   MATCH_NOT_FOUND = 'MATCH_001',
   MATCH_SELF_PLAY = 'MATCH_002',
   MATCH_NOT_AUTHORIZED = 'MATCH_003',
-  MATCH_INVALID_STATUS_TRANSITION = 'MATCH_004',
+  MATCH_ALREADY_COMPLETE = 'MATCH_004',
   MATCH_ALREADY_EXISTS = 'MATCH_005',
 
   // 외부 API 관련 에러
@@ -241,9 +241,9 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
     statusCode: 403,
     message: '이 매치에 대한 권한이 없습니다.',
   },
-  [GlobalErrorCode.MATCH_INVALID_STATUS_TRANSITION]: {
+  [GlobalErrorCode.MATCH_ALREADY_COMPLETE]: {
     statusCode: 400,
-    message: '유효하지 않은 매치 상태 변경입니다.',
+    message: '이미 완료된 매치입니다.',
   },
   [GlobalErrorCode.MATCH_ALREADY_EXISTS]: {
     statusCode: 400,
