@@ -1,6 +1,5 @@
 // src/routes/tournament/match.ts
 import { FastifyInstance } from 'fastify';
-import { gameService } from '../../plugins/tournament/gameService';
 import { verifyToken } from '../../utils/jwt';
 
 export default async function matchRoutes(fastify: FastifyInstance) {
@@ -21,13 +20,13 @@ export default async function matchRoutes(fastify: FastifyInstance) {
           userId = verifyToken(data.token);
 
           // 매치 참가 권한 검증
-          await gameService.validateMatchParticipation(parseInt(matchId), userId);
+          await fastify.gameService.validateMatchParticipation(parseInt(matchId), userId);
 
-          // 플레이어 연결 등록 및 게임 세팅(최초 1회)
-          gameService.registerPlayerConnection(parseInt(matchId), userId, connection);
+          // 플레이어 연결 등록 및 게임 세팅
+          await fastify.gameService.registerPlayerConnection(parseInt(matchId), userId, connection);
 
           // 플레이어 인증
-          isGameReady = await gameService.authenticatePlayer(parseInt(matchId), userId);
+          isGameReady = await fastify.gameService.authenticatePlayer(parseInt(matchId), userId);
 
           isAuthorized = true;
 
@@ -38,12 +37,12 @@ export default async function matchRoutes(fastify: FastifyInstance) {
           );
 
           // 두 플레이어 모두 인증되면 게임 시작
-          if (isGameReady) {
-            await gameService.startMatch(parseInt(matchId));
+          if (isGameReady.isGameReady) {
+            await fastify.gameService.startMatch(parseInt(matchId));
           }
         } else if (data.type === 'move_paddle' && isAuthorized) {
           // 패들 이동 처리
-          gameService.updatePaddleDirection(parseInt(matchId), userId, data.data);
+          fastify.gameService.updatePaddleDirection(parseInt(matchId), userId, data.data);
         } else {
           fastify.log.warn(`알 수 없는 메시지 타입: ${data.type}`);
         }
@@ -61,7 +60,7 @@ export default async function matchRoutes(fastify: FastifyInstance) {
 
     // 연결 종료 처리
     connection.on('close', () => {
-      gameService.handlePlayerDisconnect(parseInt(matchId), userId);
+      fastify.gameService.handlePlayerDisconnect(parseInt(matchId), userId);
     });
   });
 }

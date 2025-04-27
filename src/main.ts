@@ -19,6 +19,8 @@ import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
 import fastifyWebsocket from '@fastify/websocket';
 import matchRoutes from './routes/tournament/match';
+import { GameState, PaddleDirection } from './types/game';
+import gameService from './plugins/tournament/gameService';
 import cors from '@fastify/cors';
 
 const fastify = Fastify({
@@ -27,6 +29,12 @@ const fastify = Fastify({
 
 // 글로벌 에러 핸들러 등록
 fastify.setErrorHandler(exceptionHandler);
+
+fastify.decorate('matchSockets', new Map<number, Map<number, WebSocket>>());
+fastify.decorate('matchStates', new Map<number, GameState>());
+fastify.decorate('gameIntervals', new Map<number, NodeJS.Timeout>());
+fastify.decorate('playerAuthenticated', new Map<number, Set<number>>());
+fastify.decorate('paddleDirections', new Map<number, Map<number, PaddleDirection>>());
 
 // 데이터베이스 연결
 await fastify.register(prismaPlugin);
@@ -45,6 +53,7 @@ await fastify.register(friendService);
 await fastify.register(adminService);
 await fastify.register(tournamentService);
 await fastify.register(matchService);
+await fastify.register(gameService);
 
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/ft/api/auth' });

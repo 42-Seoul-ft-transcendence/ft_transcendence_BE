@@ -1,5 +1,6 @@
 import 'fastify';
 import { GoogleUserInfo } from './auth';
+import { GameState, PaddleDirection } from './game';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -9,7 +10,34 @@ declare module 'fastify' {
   }
 
   interface FastifyInstance {
-    matchSockets: Map<string, Map<string, WebSocket>>;
+    matchSockets: Map<number, Map<number, WebSocket>>;
+    matchStates: Map<number, GameState>;
+    gameIntervals: Map<number, NodeJS.Timeout>;
+    playerAuthenticated: Map<number, Set<number>>;
+    paddleDirections: Map<number, Map<number, PaddleDirection>>;
+
+    gameService: {
+      validateMatchParticipation(matchId: number, userId: number): Promise<void>;
+      registerPlayerConnection(matchId: number, userId: number, socket: any): Promise<void>;
+      authenticatePlayer(matchId: number, userId: number): Promise<{ isGameReady: boolean }>;
+      updatePaddleDirection(matchId: number, userId: number, direction: PaddleDirection): void;
+      handlePlayerDisconnect(matchId: number, userId: number): void;
+      cleanupMatch(matchId: number): void;
+      initGameState(matchId: number): Promise<void>;
+      startMatch(matchId: number): Promise<void>;
+      updateGameLoop(matchId: number): void;
+      updatePaddles(matchId: number, gameState: GameState): void;
+      updateBallPosition(gameState: GameState): void;
+      checkPaddleCollisions(gameState: GameState): void;
+      checkScoring(matchId: number, gameState: GameState): void;
+      checkGameOver(matchId: number, gameState: GameState): void;
+      resetBall(gameState: GameState): void;
+      endGame(matchId: number): Promise<void>;
+      updateMatchResults(matchId: number, gameState: GameState): Promise<void>;
+      updatePlayerStats(winnerId: number, loserId: number): Promise<void>;
+      broadcastGameState(matchId: number): void;
+      broadcastToMatch(matchId: number, message: any): void;
+    };
 
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
 
