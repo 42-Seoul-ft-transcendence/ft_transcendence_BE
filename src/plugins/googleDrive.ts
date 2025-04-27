@@ -14,10 +14,6 @@ declare module 'fastify' {
 
 export default fp(
   async (fastify: FastifyInstance) => {
-    console.log('-------------------------------------');
-    console.log('GOOGLE_CLIENT_EMAIL:', GOOGLE_CLIENT_EMAIL);
-    console.log('GOOGLE_PRIVATE_KEY:', GOOGLE_PRIVATE_KEY ? 'Loaded' : 'Not Loaded');
-    console.log('-------------------------------------');
     if (!GOOGLE_CLIENT_EMAIL) {
       throw new Error('GOOGLE_CLIENT_EMAIL이 설정되어 있지 않습니다');
     }

@@ -89,7 +89,3 @@ const start = async () => {
 };
 
 start();
-
-// // 라우트 확인
-// await fastify.ready();
-// console.log(fastify.printRoutes());
