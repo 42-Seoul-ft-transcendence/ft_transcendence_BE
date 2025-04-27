@@ -25,7 +25,7 @@ const friendRoute: FastifyPluginAsync = async (fastify) => {
   fastify.put('/request/:requestId', {
     schema: respondFriendRequestSchema,
     preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
+    handler: async (request) => {
       const userId = request.user.id;
       const { requestId } = request.params as { requestId: number };
       const { action } = request.body as { action: 'accept' | 'decline' };
@@ -42,7 +42,7 @@ const friendRoute: FastifyPluginAsync = async (fastify) => {
   fastify.delete('/:friendId', {
     schema: deleteFriendSchema,
     preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
+    handler: async (request) => {
       const userId = request.user.id;
       const { friendId } = request.params as { friendId: number };
 
