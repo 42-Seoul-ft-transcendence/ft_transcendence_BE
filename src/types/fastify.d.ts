@@ -1,5 +1,6 @@
 import 'fastify';
 import { GoogleUserInfo } from './auth';
+import { drive_v3 } from '@googleapis/drive';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -146,5 +147,7 @@ declare module 'fastify' {
         totalPages: number;
       }>;
     };
+
+    googleDrive: drive_v3.Drive;
   }
 }

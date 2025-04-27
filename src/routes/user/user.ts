@@ -17,13 +17,13 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
     },
   });
 
-  // 사용자 프로필 수정
+  // 사용자 프로필 이름 수정
   fastify.patch('/me', {
     schema: updateUserSchema,
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-      const userData = request.body as { name?: string; image?: string | null };
+      const userData = request.body as { name?: string };
       const user = await fastify.userService.updateUser(userId, userData);
       return reply.send(user);
     },

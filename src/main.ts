@@ -19,6 +19,10 @@ import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
 import fastifyWebsocket from '@fastify/websocket';
 import matchRoutes from './routes/tournament/match';
+import sensible from '@fastify/sensible';
+import googleDrivePlugin from './plugins/googleDrive';
+import userImageRoute from './routes/user/uploadProfileImage';
+import multipart from '@fastify/multipart';
 
 const fastify = Fastify({
   // logger: true,
@@ -35,6 +39,10 @@ await fastify.register(swagger);
 await fastify.register(fastifyWebsocket);
 await fastify.register(jwtMiddleware);
 
+await fastify.register(multipart, {
+  limits: { fileSize: 100 * 1024 * 1024 },
+});
+
 // 서비스 플러그인 등록
 await fastify.register(authService);
 await fastify.register(googleAuthService);
@@ -44,15 +52,17 @@ await fastify.register(friendService);
 await fastify.register(adminService);
 await fastify.register(tournamentService);
 await fastify.register(matchService);
+await fastify.register(sensible);
+await fastify.register(googleDrivePlugin);
 
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/ft/api/auth' });
 await fastify.register(twoFactorAuthRoute, { prefix: '/ft/api/auth' });
 await fastify.register(userRoute, { prefix: '/ft/api/users' });
+await fastify.register(userImageRoute, { prefix: '/ft/api/users' });
 await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
 await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
 await fastify.register(tournamentRoute, { prefix: '/ft/api/tournaments' });
-
 fastify.register(matchRoutes, { prefix: '/ft' });
 
 // health check api
@@ -79,3 +89,7 @@ const start = async () => {
 };
 
 start();
+
+// // 라우트 확인
+// await fastify.ready();
+// console.log(fastify.printRoutes());
