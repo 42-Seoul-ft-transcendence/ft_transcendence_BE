@@ -19,7 +19,7 @@ export const getUserSchema = {
 };
 
 // 사용자 프로필 수정 스키마
-export const updateUserSchema = {
+export const updateUserNameSchema = {
   summary: '사용자 이름 수정',
   tags: ['User'],
   security: [{ bearerAuth: [] }],
@@ -53,10 +53,10 @@ export const uploadImageSchema = {
         schema: {
           type: 'object',
           properties: {
-            image: { 
-              type: 'string', 
+            image: {
+              type: 'string',
               format: 'binary',
-              description: '업로드할 이미지 파일'
+              description: '업로드할 프로필 이미지',
             },
           },
           required: ['image'],

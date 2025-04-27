@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import {
   getUserMatchHistorySchema,
   getUserSchema,
-  updateUserSchema,
+  updateUserNameSchema,
 } from '../../schemas/user/userSchema';
 
 const userRoute: FastifyPluginAsync = async (fastify) => {
@@ -18,13 +18,13 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
   });
 
   // 사용자 프로필 이름 수정
-  fastify.patch('/me', {
-    schema: updateUserSchema,
+  fastify.post('/me', {
+    schema: updateUserNameSchema,
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-      const userData = request.body as { name?: string };
-      const user = await fastify.userService.updateUser(userId, userData);
+      const { name } = request.body as { name: string };
+      const user = await fastify.userService.updateUserName(userId, name);
       return reply.send(user);
     },
   });
@@ -35,11 +35,7 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-      const query = request.query as {
-        page: number;
-        limit: number;
-      };
-
+      const query = request.query as { page: number; limit: number };
       const result = await fastify.matchService.getUserMatchHistory(userId, query);
       return reply.send(result);
     },

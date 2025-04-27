@@ -18,27 +18,25 @@ export default fp(async (fastify: FastifyInstance) => {
     },
 
     /**
-     * 사용자 프로필 수정
+     * 사용자 이름 수정 (중복 확인 포함)
      */
-    async updateUser(userId: number, userData: { name?: string; image?: string | null }) {
-      // 이름이 제공된 경우 중복 확인
-      if (userData.name) {
-        const existingUser = await fastify.prisma.user.findFirst({
-          where: {
-            name: userData.name,
-            id: { not: userId },
-          },
-        });
+    async updateUserName(userId: number, name: string) {
+      // 이름 중복 확인
+      const existingUser = await fastify.prisma.user.findFirst({
+        where: {
+          name,
+          id: { not: userId },
+        },
+      });
 
-        if (existingUser) {
-          throw new GlobalException(GlobalErrorCode.USER_NAME_ALREADY_EXISTS);
-        }
+      if (existingUser) {
+        throw new GlobalException(GlobalErrorCode.USER_NAME_ALREADY_EXISTS);
       }
 
-      // 사용자 정보 업데이트
+      // 사용자 이름 업데이트
       return fastify.prisma.user.update({
         where: { id: userId },
-        data: userData,
+        data: { name },
       });
     },
 
