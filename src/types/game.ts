@@ -25,13 +25,6 @@ export interface GameState {
   winner?: number;
 }
 
-// 웹소켓 메시지 인터페이스
-export interface WSMessage {
-  type: string;
-  data?: any;
-  countDown?: number;
-}
-
 // 게임 설정 상수
 export const GAME_CONSTANTS = {
   WIN_SCORE: 5,
