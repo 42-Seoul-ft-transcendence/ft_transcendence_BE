@@ -23,6 +23,7 @@ export interface GameState {
   };
   isGameOver: boolean;
   winner?: number;
+  disconnected?: boolean;
 }
 
 // 게임 설정 상수

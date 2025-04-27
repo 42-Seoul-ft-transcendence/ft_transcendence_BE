@@ -92,17 +92,27 @@ export default fp(async (fastify: FastifyInstance) => {
     /**
      * 플레이어 연결 해제 처리
      */
-    handlePlayerDisconnect(matchId: number, userId: number): void {
+    async handlePlayerDisconnect(matchId: number, userId: number) {
       // 소켓 삭제
       const sockets = fastify.matchSockets.get(matchId);
       if (sockets) {
         sockets.delete(userId);
 
-        // 모든 플레이어가 나가면 게임 종료
-        if (sockets.size === 0) {
-          fastify.gameService.cleanupMatch(matchId);
+        // 게임 상태 확인
+        const gameState = fastify.matchStates.get(matchId);
+        if (gameState && !gameState.isGameOver) {
+          // 게임이 진행 중이었다면 남은 플레이어 승리 처리
+          if (gameState.player1.userId === userId) {
+            gameState.winner = gameState.player2.userId;
+          } else if (gameState.player2.userId === userId) {
+            gameState.winner = gameState.player1.userId;
+          }
+          gameState.isGameOver = true;
+          gameState.disconnected = true;
+          await fastify.gameService.endGame(matchId);
         }
       }
+      fastify.gameService.cleanupMatch(matchId);
     },
 
     /**
@@ -378,6 +388,7 @@ export default fp(async (fastify: FastifyInstance) => {
             winner: gameState.winner,
             player1Score: gameState.player1.score,
             player2Score: gameState.player2.score,
+            disconnected: gameState.disconnected || false,
           },
         });
       } catch (error) {
