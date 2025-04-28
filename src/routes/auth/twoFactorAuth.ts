@@ -22,7 +22,7 @@ const twoFactorAuthRoute: FastifyPluginAsync = async (fastify) => {
   fastify.post('/2fa/verify', {
     schema: twoFactorVerifySchema,
     preHandler: fastify.authenticate,
-    handler: async (request, reply) => {
+    handler: async (request) => {
       const userId = request.user.id;
       const { token, secret } = request.body as { token: string; secret: string };
       await fastify.twoFactorAuthService.verifyAndEnableTwoFactor(userId, token, secret);

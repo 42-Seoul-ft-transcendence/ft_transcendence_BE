@@ -24,6 +24,9 @@ import googleDrivePlugin from './plugins/googleDrive';
 import userImageRoute from './routes/user/uploadProfileImage';
 import multipart from '@fastify/multipart';
 import { ajvFilePlugin } from '@fastify/multipart';
+import { GameState, PaddleDirection } from './types/game';
+import gameService from './plugins/tournament/gameService';
+import cors from '@fastify/cors';
 
 const fastify = Fastify({
   // logger: true,
@@ -34,6 +37,12 @@ const fastify = Fastify({
 
 // 글로벌 에러 핸들러 등록
 fastify.setErrorHandler(exceptionHandler);
+
+fastify.decorate('matchSockets', new Map<number, Map<number, WebSocket>>());
+fastify.decorate('matchStates', new Map<number, GameState>());
+fastify.decorate('gameIntervals', new Map<number, NodeJS.Timeout>());
+fastify.decorate('playerAuthenticated', new Map<number, Set<number>>());
+fastify.decorate('paddleDirections', new Map<number, Map<number, PaddleDirection>>());
 
 // 데이터베이스 연결
 await fastify.register(prismaPlugin);
@@ -59,6 +68,7 @@ await fastify.register(tournamentService);
 await fastify.register(matchService);
 await fastify.register(sensible);
 await fastify.register(googleDrivePlugin);
+await fastify.register(gameService);
 
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/ft/api/auth' });
@@ -69,6 +79,28 @@ await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
 await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
 await fastify.register(tournamentRoute, { prefix: '/ft/api/tournaments' });
 fastify.register(matchRoutes, { prefix: '/ft' });
+
+// CORS 설정 등록
+await fastify.register(cors, {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://back-coffeego.com',
+      'http://localhost:8083',
+      'http://localhost:5173',
+      'http://localhost:5174',
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      // 허용된 출처
+      callback(null, true);
+    } else {
+      // 허용되지 않은 출처
+      callback(new Error('Not allowed by CORS'), false);
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // 허용할 HTTP 메서드
+  credentials: true, // 쿠키 허용 여부
+});
 
 // health check api
 fastify.get('/ft/ping', async () => {

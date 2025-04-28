@@ -1,22 +1,3 @@
-// 매치 공통 응답 속성
-const matchResponseProps = {
-  id: { type: 'number' },
-  status: { type: 'string' },
-  player1Score: { type: 'number' },
-  player2Score: { type: 'number' },
-  date: { type: 'string', format: 'date', nullable: true },
-};
-
-// 간단한 플레이어 정보
-const simplePlayerSchema = {
-  type: 'object',
-  properties: {
-    id: { type: 'number' },
-    name: { type: 'string' },
-    image: { type: 'string', nullable: true },
-  },
-};
-
 export const generateAdminTokenSchema = {
   summary: '어드민 권한으로 사용자 토큰 생성 (테스트용)',
   tags: ['Admin'],

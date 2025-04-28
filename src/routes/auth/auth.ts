@@ -1,6 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
 import { googleAuthSchema, refreshTokenSchema } from '../../schemas/auth/authSchema';
-import { GoogleUserInfo } from '../../types/auth';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   fastify

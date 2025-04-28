@@ -10,7 +10,7 @@ const prismaClientSingleton = () => {
 // 전역 타입 선언
 declare global {
   // eslint-disable-next-line no-var
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
+  var prisma: ReturnType<typeof prismaClientSingleton>;
 }
 
 // 개발 중 핫 리로딩 시 여러 인스턴스 생성 방지를 위한 글로벌 변수 사용

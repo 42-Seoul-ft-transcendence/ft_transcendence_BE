@@ -224,7 +224,7 @@ export default fp(async (fastify: FastifyInstance) => {
 
         // 2P 토너먼트인 경우 매치 1개 생성
         if (tournament.type === '2P') {
-          const match = await fastify.prisma.match.create({
+          await fastify.prisma.match.create({
             data: {
               tournamentId,
               round: 1,
