@@ -23,9 +23,13 @@ import sensible from '@fastify/sensible';
 import googleDrivePlugin from './plugins/googleDrive';
 import userImageRoute from './routes/user/uploadProfileImage';
 import multipart from '@fastify/multipart';
+import { ajvFilePlugin } from '@fastify/multipart';
 
 const fastify = Fastify({
   // logger: true,
+  ajv: {
+    plugins: [ajvFilePlugin],
+  },
 });
 
 // 글로벌 에러 핸들러 등록
@@ -40,6 +44,7 @@ await fastify.register(fastifyWebsocket);
 await fastify.register(jwtMiddleware);
 
 await fastify.register(multipart, {
+  attachFieldsToBody: true,
   limits: { fileSize: 100 * 1024 * 1024 },
 });
 

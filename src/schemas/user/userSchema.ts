@@ -46,22 +46,12 @@ export const uploadImageSchema = {
   summary: '프로필 이미지 업로드',
   tags: ['User'],
   security: [{ bearerAuth: [] }],
-  requestBody: {
-    required: true,
-    content: {
-      'multipart/form-data': {
-        schema: {
-          type: 'object',
-          properties: {
-            image: {
-              type: 'string',
-              format: 'binary',
-              description: '업로드할 프로필 이미지',
-            },
-          },
-          required: ['image'],
-        },
-      },
+  consumes: ['multipart/form-data'],
+  body: {
+    type: 'object',
+    required: ['image'],
+    properties: {
+      image: { isFile: true },
     },
   },
   response: {
