@@ -5,37 +5,35 @@ import jwtMiddleware from './plugins/jwtMiddleware.js';
 import authService from './plugins/auth/authService.js';
 import googleAuthService from './plugins/auth/googleAuthService.js';
 import twoFactorAuthService from './plugins/auth/twoFactorAuthService.js';
-import authRoute from './routes/auth/auth';
-import twoFactorAuthRoute from './routes/auth/twoFactorAuth';
-import { exceptionHandler } from './global/exceptions/exceptionHandler.js';
 import userService from './plugins/user/userService';
-import userRoute from './routes/user/user';
 import friendService from './plugins/user/friendService';
-import friendRoute from './routes/user/friend';
-import adminRoute from './routes/admin';
 import adminService from './plugins/admin/adminService';
-import tournamentRoute from './routes/tournament/tournament';
 import tournamentService from './plugins/tournament/tournamentService';
 import matchService from './plugins/tournament/matchService';
-import fastifyWebsocket from '@fastify/websocket';
+import gameService from './plugins/tournament/gameService';
+import googleDrivePlugin from './plugins/googleDrivePlugin';
+import googleDriveService from './plugins/user/googleDriveService';
+import cors from '@fastify/cors';
+import authRoute from './routes/auth/auth';
+import twoFactorAuthRoute from './routes/auth/twoFactorAuth';
+import userRoute from './routes/user/user';
+import friendRoute from './routes/user/friend';
+import adminRoute from './routes/admin';
+import tournamentRoute from './routes/tournament/tournament';
 import matchRoutes from './routes/tournament/match';
+import fastifyWebsocket from '@fastify/websocket';
 import sensible from '@fastify/sensible';
-import googleDrivePlugin from './plugins/googleDrive';
-import userImageRoute from './routes/user/uploadProfileImage';
 import multipart from '@fastify/multipart';
 import { ajvFilePlugin } from '@fastify/multipart';
+import { exceptionHandler } from './global/exceptions/exceptionHandler.js';
 import { GameState, PaddleDirection } from './types/game';
-import gameService from './plugins/tournament/gameService';
-import cors from '@fastify/cors';
 
 const fastify = Fastify({
   // logger: true,
-  ajv: {
-    plugins: [ajvFilePlugin],
-  },
+  ajv: { plugins: [ajvFilePlugin] },
 });
 
-// 글로벌 에러 핸들러 등록
+// 글로벌 에러 핸들러
 fastify.setErrorHandler(exceptionHandler);
 
 fastify.decorate('matchSockets', new Map<number, Map<number, WebSocket>>());
@@ -52,33 +50,40 @@ await fastify.register(swagger);
 await fastify.register(fastifyWebsocket);
 await fastify.register(jwtMiddleware);
 
+// Auth 관련 서비스
+await fastify.register(authService);
+await fastify.register(googleAuthService);
+await fastify.register(twoFactorAuthService);
+
+// Google Drive 플러그인 & 서비스
 await fastify.register(multipart, {
   attachFieldsToBody: true,
   limits: { fileSize: 100 * 1024 * 1024 },
 });
+await fastify.register(googleDrivePlugin);
+await fastify.register(googleDriveService);
 
-// 서비스 플러그인 등록
-await fastify.register(authService);
-await fastify.register(googleAuthService);
-await fastify.register(twoFactorAuthService);
+// User/Friend/Admin 서비스
 await fastify.register(userService);
 await fastify.register(friendService);
 await fastify.register(adminService);
+
+// Tournament/Match/Game 서비스
 await fastify.register(tournamentService);
 await fastify.register(matchService);
-await fastify.register(sensible);
-await fastify.register(googleDrivePlugin);
 await fastify.register(gameService);
+
+// 7) 기타 유틸
+await fastify.register(sensible);
 
 // 라우트 등록
 await fastify.register(authRoute, { prefix: '/ft/api/auth' });
 await fastify.register(twoFactorAuthRoute, { prefix: '/ft/api/auth' });
 await fastify.register(userRoute, { prefix: '/ft/api/users' });
-await fastify.register(userImageRoute, { prefix: '/ft/api/users' });
 await fastify.register(friendRoute, { prefix: '/ft/api/friends' });
 await fastify.register(adminRoute, { prefix: '/ft/api/admin' });
 await fastify.register(tournamentRoute, { prefix: '/ft/api/tournaments' });
-fastify.register(matchRoutes, { prefix: '/ft' });
+await fastify.register(matchRoutes, { prefix: '/ft' });
 
 // CORS 설정 등록
 await fastify.register(cors, {
@@ -102,16 +107,12 @@ await fastify.register(cors, {
   credentials: true, // 쿠키 허용 여부
 });
 
-// health check api
-fastify.get('/ft/ping', async () => {
-  return 'pong\n';
-});
+// Health check & 기본 WebSocket 테스트
+fastify.get('/ft/ping', async () => 'pong\n');
 
-fastify.register(async function (fastify) {
-  fastify.get('/ft/websocket', { websocket: true }, (socket) => {
-    socket.on('message', () => {
-      socket.send('hi from server');
-    });
+fastify.register(async (f) => {
+  f.get('/ft/websocket', { websocket: true }, (socket) => {
+    socket.on('message', () => socket.send('hi from server'));
   });
 });
 

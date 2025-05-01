@@ -1,6 +1,9 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
+import { MultipartFile } from '@fastify/multipart';
+import { v4 as uuidv4 } from 'uuid';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
+import { GDRIVE_FOLDER_ID } from '../../global/config';
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorate('userService', {
@@ -18,7 +21,7 @@ export default fp(async (fastify: FastifyInstance) => {
     },
 
     /**
-     * 사용자 이름 수정 (중복 확인 포함)
+     * 사용자 이름 수정
      */
     async updateUserName(userId: number, name: string) {
       // 이름 중복 확인
@@ -76,6 +79,39 @@ export default fp(async (fastify: FastifyInstance) => {
         limit,
         totalPages: Math.ceil(total / limit),
       };
+    },
+
+    /**
+     * 사용자 프로필 이미지 업로드
+     */
+    async uploadUserImage(userId: number, file: MultipartFile) {
+      // 1) MIME 타입 검증
+      const allowed = ['image/png', 'image/jpeg', 'image/jpg'];
+      if (!allowed.includes(file.mimetype)) {
+        throw new GlobalException(GlobalErrorCode.UNSUPPORTED_MEDIA_TYPE);
+      }
+
+      // 2) 버퍼 생성 및 이름 결정
+      const buffer = await file.toBuffer();
+      const filename = `${uuidv4()}_${file.filename}`;
+      const folderId = GDRIVE_FOLDER_ID ?? '';
+
+      // 3) Google Drive에 업로드
+      const fileId = await fastify.googleDriveService.uploadFile(
+        filename,
+        buffer,
+        file.mimetype,
+        folderId,
+      );
+      const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
+
+      // 4) DB에 이미지 URL 저장
+      await fastify.prisma.user.update({
+        where: { id: userId },
+        data: { image: imageUrl },
+      });
+
+      return { image: imageUrl };
     },
   });
 });

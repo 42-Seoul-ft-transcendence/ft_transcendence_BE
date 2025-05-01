@@ -3,24 +3,8 @@ import { FastifyInstance } from 'fastify';
 import { google } from 'googleapis';
 import { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY } from '../global/config';
 
-// google.drive(...)가 리턴하는 타입을 그대로 뽑아 옵니다.
-type DriveClient = ReturnType<typeof google.drive>;
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    googleDrive: { drive: DriveClient };
-  }
-}
-
 export default fp(
   async (fastify: FastifyInstance) => {
-    if (!GOOGLE_CLIENT_EMAIL) {
-      throw new Error('GOOGLE_CLIENT_EMAIL이 설정되어 있지 않습니다');
-    }
-    if (!GOOGLE_PRIVATE_KEY) {
-      throw new Error('GOOGLE_PRIVATE_KEY가 설정되어 있지 않습니다');
-    }
-
     try {
       const auth = new google.auth.GoogleAuth({
         credentials: {
