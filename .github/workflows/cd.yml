@@ -57,7 +57,7 @@ jobs:
             -e ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
             -e ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
             -e GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} \
-            -e "GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }}") \
+            -e "GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }}" \
             -e GDRIVE_FOLDER_ID=${{ secrets.GDRIVE_FOLDER_ID }} \
             ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
           sleep 5
