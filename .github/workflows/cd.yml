@@ -24,7 +24,11 @@ jobs:
         run: npx tsc
 
       - name: Docker build
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be .
+        run: |
+          docker build \
+            -f Dockerfile \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be:latest \
+            .
 
       - name: Docker login
         uses: docker/login-action@v2
@@ -33,7 +37,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Docker push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be:latest
 
   deploy-to-ec2:
     needs: docker-build-and-push
@@ -41,25 +45,26 @@ jobs:
 
     steps:
       - name: Docker pull from Docker Hub
-        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be:latest
 
       - name: Stop and remove existing container
         run: |
           sudo docker stop ft_transcendence || true
-          sudo docker rm ft_transcendence || true
+          sudo docker rm ft_transcendence   || true
 
       - name: Run new container
         run: |
-          sudo docker run --name ft_transcendence --rm -d -p 8083:8083 \
-            -v $HOME/ft_transcendence_db:/app/prisma/data \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            -e ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
-            -e ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
-            -e GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} \
+          sudo docker run --name ft_transcendence --rm -d \
+            -p 8083:8083 \
+            -v "$HOME/ft_transcendence_db:/app/prisma/data" \
+            -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            -e ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" \
+            -e ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}" \
+            -e GOOGLE_CLIENT_EMAIL="${{ secrets.GOOGLE_CLIENT_EMAIL }}" \
             -e "GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }}" \
-            -e GDRIVE_FOLDER_ID=${{ secrets.GDRIVE_FOLDER_ID }} \
-            ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be
+            -e GDRIVE_FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}" \
+            ${{ secrets.DOCKERHUB_USERNAME }}/ft_transcendence_be:latest
           sleep 5
           sudo docker ps -a
 
@@ -78,8 +83,7 @@ jobs:
 
       - name: Run migration if schema.prisma changed
         if: steps.prisma.outputs.changed == 'true'
-        run: |
-          sudo docker exec ft_transcendence npx prisma migrate deploy
+        run: sudo docker exec ft_transcendence npx prisma migrate deploy
 
       - name: Check Docker logs
         run: sudo docker logs ft_transcendence || true
