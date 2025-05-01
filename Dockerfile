@@ -14,7 +14,8 @@ COPY src ./src
 RUN npx prisma generate
 
 # TS 컴파일 (dist 폴더 생성)
-RUN npm run build          # package.json에 "build": "tsc" 필요
+# package.json에 "build": "tsc" 필요
+RUN npm run build          
 
 # 2) Production Stage: JS만 실행
 FROM node:20-alpine
