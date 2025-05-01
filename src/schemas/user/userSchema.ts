@@ -19,16 +19,16 @@ export const getUserSchema = {
 };
 
 // 사용자 프로필 수정 스키마
-export const updateUserSchema = {
-  summary: '사용자 프로필 수정',
+export const updateUserNameSchema = {
+  summary: '사용자 이름 수정',
   tags: ['User'],
   security: [{ bearerAuth: [] }],
   body: {
     type: 'object',
     properties: {
       name: { type: 'string', minLength: 2, maxLength: 30 },
-      image: { type: 'string', nullable: true },
     },
+    required: ['name'],
   },
   response: {
     200: {
@@ -36,6 +36,29 @@ export const updateUserSchema = {
       properties: {
         name: { type: 'string' },
         image: { type: 'string', nullable: true },
+      },
+    },
+  },
+};
+
+// 사용자 프로필 이미지 업로드 스키마
+export const uploadImageSchema = {
+  summary: '프로필 이미지 업로드',
+  tags: ['User'],
+  security: [{ bearerAuth: [] }],
+  consumes: ['multipart/form-data'],
+  body: {
+    type: 'object',
+    required: ['image'],
+    properties: {
+      image: { isFile: true },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        image: { type: 'string' },
       },
     },
   },

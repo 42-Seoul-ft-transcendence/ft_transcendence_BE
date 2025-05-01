@@ -2,8 +2,12 @@ import { FastifyPluginAsync } from 'fastify';
 import {
   getUserMatchHistorySchema,
   getUserSchema,
-  updateUserSchema,
+  updateUserNameSchema,
+  uploadImageSchema,
 } from '../../schemas/user/userSchema';
+import { MultipartFile } from '@fastify/multipart';
+import { GlobalException } from '../../global/exceptions/globalException';
+import { GlobalErrorCode } from '../../global/exceptions/globalException';
 
 const userRoute: FastifyPluginAsync = async (fastify) => {
   // 현재 로그인한 사용자 정보 조회
@@ -17,14 +21,14 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
     },
   });
 
-  // 사용자 프로필 수정
-  fastify.patch('/me', {
-    schema: updateUserSchema,
+  // 사용자 프로필 이름 수정
+  fastify.post('/me', {
+    schema: updateUserNameSchema,
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-      const userData = request.body as { name?: string; image?: string | null };
-      const user = await fastify.userService.updateUser(userId, userData);
+      const { name } = request.body as { name: string };
+      const user = await fastify.userService.updateUserName(userId, name);
       return reply.send(user);
     },
   });
@@ -35,15 +39,36 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
     preHandler: fastify.authenticate,
     handler: async (request, reply) => {
       const userId = request.user.id;
-      const query = request.query as {
-        page: number;
-        limit: number;
-      };
-
+      const query = request.query as { page: number; limit: number };
       const result = await fastify.matchService.getUserMatchHistory(userId, query);
       return reply.send(result);
     },
   });
+
+  // 사용자 프로필 이미지 업로드
+  fastify.post(
+    '/me/image',
+    {
+      schema: uploadImageSchema,
+      preHandler: fastify.authenticate,
+    },
+    async (request, reply) => {
+      try {
+        const userId = request.user.id;
+        const body = request.body as { image: MultipartFile | MultipartFile[] };
+        const data = Array.isArray(body.image) ? body.image[0] : body.image;
+        if (!data) {
+          throw new GlobalException(GlobalErrorCode.FILE_NOT_UPLOADED);
+        }
+        // 유저 서비스에 위임
+        const result = await fastify.userService.uploadUserImage(userId, data);
+        return reply.send({ image: result.image });
+      } catch (error) {
+        if (error instanceof GlobalException) throw error;
+        throw new GlobalException(GlobalErrorCode.UNKNOWN_ERROR);
+      }
+    },
+  );
 };
 
 export default userRoute;

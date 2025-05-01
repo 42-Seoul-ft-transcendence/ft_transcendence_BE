@@ -22,6 +22,9 @@ export enum GlobalErrorCode {
   USER_ALREADY_EXISTS = 'USER_002',
   USER_INVALID_DATA = 'USER_003',
   USER_NAME_ALREADY_EXISTS = 'USER_004',
+  FILE_NOT_UPLOADED = 'USER_005',
+  UNSUPPORTED_MEDIA_TYPE = 'USER_006',
+  DRIVE_FILE_ID_NOT_FOUND = 'USER_007',
 
   // 친구 관련 에러
   FRIEND_SELF_REQUEST = 'FRIEND_001',
@@ -137,6 +140,18 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.USER_NAME_ALREADY_EXISTS]: {
     statusCode: 409,
     message: '이미 사용 중인 이름입니다.',
+  },
+  [GlobalErrorCode.FILE_NOT_UPLOADED]: {
+    statusCode: 400,
+    message: '파일이 업로드되지 않았습니다.',
+  },
+  [GlobalErrorCode.UNSUPPORTED_MEDIA_TYPE]: {
+    statusCode: 415,
+    message: '지원하지 않는 미디어 타입입니다.',
+  },
+  [GlobalErrorCode.DRIVE_FILE_ID_NOT_FOUND]: {
+    statusCode: 501,
+    message: 'Google Drive 파일 ID를 찾을 수 없습니다.',
   },
 
   // 친구 관련 에러 매핑

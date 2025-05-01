@@ -1,6 +1,8 @@
 import 'fastify';
 import { GoogleUserInfo } from './auth';
+import { drive_v3 } from '@googleapis/drive';
 import { GameState, PaddleDirection } from './game';
+type DriveClient = ReturnType<typeof google.drive>;
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -85,7 +87,7 @@ declare module 'fastify' {
 
     userService: {
       getUserById(userId: number): Promise<any>;
-      updateUser(userId: number, userData: { name?: string; image?: string | null }): Promise<any>;
+      updateUserName(userId: number, name: string): Promise<any>;
       getUsers(options: { page: number; limit: number; search?: string }): Promise<{
         users: any[];
         total: number;
@@ -93,6 +95,7 @@ declare module 'fastify' {
         limit: number;
         totalPages: number;
       }>;
+      uploadUserImage(userId: number, file: MultipartFile): Promise<{ image: string }>;
     };
 
     friendService: {
@@ -174,5 +177,13 @@ declare module 'fastify' {
         totalPages: number;
       }>;
     };
+
+    googleDrive: { drive: DriveClient };
+
+    googleDriveService: {
+      uploadFile(name: string, buffer: Buffer, mimeType: string, folderId: string): Promise<string>;
+    };
+
+    googleDrive: drive_v3.Drive;
   }
 }
