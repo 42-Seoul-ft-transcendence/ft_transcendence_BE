@@ -7,7 +7,9 @@
   "scripts": {
     "start:build": "tsc -w --project tsconfig.json && npx -p tsconfig.json",
     "build:live": "nodemon --watch 'src/' --exec node --loader ts-node/esm src/main.ts --verbose",
+    "build": "tsc",
     "start": "npm run format && npm run build:live",
+    "start:prod": "tsc && node src/main.ts",
     "lint": "eslint 'src/**/*.{ts,js}'",
     "format": "prettier --write 'src/**/*.{ts,js}'",
     "format:check": "prettier --check 'src/**/*.{ts,js}'",
