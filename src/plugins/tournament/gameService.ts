@@ -2,7 +2,7 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { GameState, PaddleDirection, GAME_CONSTANTS } from '../../types/game';
+import { GAME_CONSTANTS, GameState, PaddleDirection } from '../../types/game';
 
 // 게임 상수 불러오기
 const { WIN_SCORE, PADDLE_HEIGHT, PADDLE_SPEED, CANVAS_HEIGHT, CANVAS_WIDTH, BALL_RADIUS } =
@@ -371,28 +371,101 @@ export default fp(async (fastify: FastifyInstance) => {
         fastify.gameIntervals.delete(matchId);
       }
 
-      try {
-        // 매치 결과 저장
-        await prisma.match.update({
-          where: { id: matchId },
+      // 매치 결과 저장
+      await prisma.match.update({
+        where: { id: matchId },
+        data: { status: 'COMPLETED' },
+      });
+
+      // 플레이어 점수 기록
+      await fastify.gameService.updateMatchResults(matchId, gameState);
+
+      // 게임 종료 메시지 브로드캐스트
+      fastify.gameService.broadcastToMatch(matchId, {
+        type: 'game_end',
+        data: {
+          winner: gameState.winner,
+          player1Score: gameState.player1.score,
+          player2Score: gameState.player2.score,
+          disconnected: gameState.disconnected || false,
+        },
+      });
+
+      // 매치 정보 가져오기
+      const match = await prisma.match.findUnique({
+        where: { id: matchId },
+        include: {
+          tournament: true,
+          matchUsers: {
+            where: { isWinner: true },
+            select: { userId: true },
+          },
+        },
+      });
+
+      if (!match) throw new GlobalException(GlobalErrorCode.MATCH_NOT_FOUND);
+
+      // 토너먼트가 4P 타입인 경우
+      if (match.tournament.type === '4P') {
+        if (match.round === 1) {
+          // 라운드 1의 모든 매치가 완료되었는지 확인
+          const allRound1Matches = await prisma.match.findMany({
+            where: {
+              tournamentId: match.tournamentId,
+              round: 1,
+            },
+          });
+
+          const allCompleted = allRound1Matches.every((m) => m.status === 'COMPLETED');
+
+          if (allCompleted) {
+            // 라운드 1 승자들 찾기
+            const round1Winners = await prisma.matchUser.findMany({
+              where: {
+                match: {
+                  tournamentId: match.tournamentId,
+                  round: 1,
+                },
+                isWinner: true,
+              },
+              select: { userId: true },
+            });
+
+            // 라운드 2 (결승전) 생성
+            const finalMatch = await prisma.match.create({
+              data: {
+                tournamentId: match.tournamentId,
+                round: 2,
+                status: 'PENDING',
+                matchUsers: {
+                  create: round1Winners.map((winner) => ({
+                    userId: winner.userId,
+                    score: 0,
+                    isWinner: false,
+                  })),
+                },
+              },
+            });
+
+            console.log(`라운드 2 결승전 매치 생성됨: ${finalMatch.id}`);
+          }
+        } else if (match.round === 2) {
+          // 결승전이 종료되면 토너먼트 상태를 COMPLETED로 변경
+          await prisma.tournament.update({
+            where: { id: match.tournamentId },
+            data: { status: 'COMPLETED' },
+          });
+
+          console.log(`토너먼트 ${match.tournamentId} 완료됨`);
+        }
+      } else if (match.tournament.type === '2P') {
+        // 2P 토너먼트는 한 매치만 있으므로 바로 토너먼트 완료 처리
+        await prisma.tournament.update({
+          where: { id: match.tournamentId },
           data: { status: 'COMPLETED' },
         });
 
-        // 플레이어 점수 기록
-        await fastify.gameService.updateMatchResults(matchId, gameState);
-
-        // 게임 종료 메시지 브로드캐스트
-        fastify.gameService.broadcastToMatch(matchId, {
-          type: 'game_end',
-          data: {
-            winner: gameState.winner,
-            player1Score: gameState.player1.score,
-            player2Score: gameState.player2.score,
-            disconnected: gameState.disconnected || false,
-          },
-        });
-      } catch (error) {
-        console.error(`게임 종료 처리 실패: ${error.message}`);
+        console.log(`토너먼트 ${match.tournamentId} 완료됨`);
       }
     },
 
