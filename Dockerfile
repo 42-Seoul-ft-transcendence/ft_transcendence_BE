@@ -9,7 +9,8 @@ COPY src ./src
 
 RUN npm install
 RUN npx prisma generate
+RUN npm run build
 
 EXPOSE 8083
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod"]
