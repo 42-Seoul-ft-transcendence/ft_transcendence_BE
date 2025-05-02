@@ -3,7 +3,6 @@ import fetch from 'node-fetch';
 import { GOOGLE_USERINFO_URL } from '../../global/config';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
 import { GoogleUserInfo } from '../../types/auth';
-import { gmail } from 'googleapis/build/src/apis/gmail';
 
 export default fp(async (fastify) => {
   fastify.decorate('googleAuthService', {
