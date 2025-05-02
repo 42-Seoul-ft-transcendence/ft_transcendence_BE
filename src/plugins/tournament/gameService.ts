@@ -360,7 +360,6 @@ export default fp(async (fastify: FastifyInstance) => {
 
     /**
      * 게임 종료 처리
-     * TODO 4p일 경우, 라운드 1 match가 모두 종료되었다면 라운드 2 match 생성
      */
     async endGame(matchId: number): Promise<void> {
       const gameState = fastify.matchStates.get(matchId);
