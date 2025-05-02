@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import { GOOGLE_USERINFO_URL } from '../../global/config';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
 import { GoogleUserInfo } from '../../types/auth';
+import { gmail } from 'googleapis/build/src/apis/gmail';
 
 export default fp(async (fastify) => {
   fastify.decorate('googleAuthService', {
@@ -27,10 +28,14 @@ export default fp(async (fastify) => {
         return { user: existingUser, isNewUser: false };
       }
 
+      const email = googleUserInfo.email;
+      const atIndex = email.indexOf('@');
+      const name = atIndex !== -1 ? email.slice(0, atIndex) : email;
+
       const newUser = await fastify.prisma.user.create({
         data: {
           email: googleUserInfo.email,
-          name: googleUserInfo.sub,
+          name: name,
           googleId: googleUserInfo.sub,
           image: googleUserInfo.picture,
           twoFactorEnabled: false,
