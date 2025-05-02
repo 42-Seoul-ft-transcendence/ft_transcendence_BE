@@ -332,14 +332,20 @@ export default fp(async (fastify: FastifyInstance) => {
       }
 
       // 토너먼트에서 탈퇴
-      await fastify.prisma.tournament.update({
-        where: { id: tournamentId },
-        data: {
-          participants: {
-            disconnect: { id: userId },
+      if (tournament.participants.length !== 1) {
+        await fastify.prisma.tournament.update({
+          where: { id: tournamentId },
+          data: {
+            participants: {
+              disconnect: { id: userId },
+            },
           },
-        },
-      });
+        });
+      } else {
+        await fastify.prisma.tournament.delete({
+          where: { id: tournamentId },
+        });
+      }
     },
   });
 });
