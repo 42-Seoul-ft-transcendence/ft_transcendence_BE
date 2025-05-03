@@ -58,6 +58,9 @@ await fastify.register(twoFactorAuthService);
 // Google Drive 플러그인 & 서비스
 await fastify.register(multipart, {
   attachFieldsToBody: true,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
 });
 await fastify.register(googleDrivePlugin);
 await fastify.register(googleDriveService);
