@@ -113,6 +113,14 @@ fastify.register(async (f) => {
   f.get('/ft/websocket', { websocket: true }, (socket) => {
     socket.on('message', () => socket.send('hi from server'));
   });
+  f.get('/ft/test-drive-list', async () => {
+    const folderId = process.env.GDRIVE_FOLDER_ID || '';
+    const files = await fastify.googleDrive.drive.files.list({
+      q: `'${folderId}' in parents`,
+      fields: 'files(id, name)',
+    });
+    return files.data.files;
+  });
 });
 
 const start = async () => {
