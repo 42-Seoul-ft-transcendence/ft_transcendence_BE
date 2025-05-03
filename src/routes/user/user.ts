@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import {
   getUserMatchHistorySchema,
-  getUserSchema,
+  getUserSchema, getUsersSchema,
   updateUserNameSchema,
   uploadImageSchema,
 } from '../../schemas/user/userSchema';
@@ -69,6 +69,21 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
       }
     },
   );
+
+  // 사용자 목록 조회
+  fastify.get('', {
+    schema: getUsersSchema,
+    handler: async (request, reply) => {
+      const query = request.query as {
+        page: number;
+        limit: number;
+        search?: string;
+      };
+
+      const result = await fastify.userService.getUsers(query);
+      return reply.send(result);
+    },
+  });
 };
 
 export default userRoute;
