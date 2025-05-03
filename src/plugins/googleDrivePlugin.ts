@@ -2,6 +2,7 @@ import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { google } from 'googleapis';
 import { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY } from '../global/config';
+import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException';
 
 export default fp(
   async (fastify: FastifyInstance) => {
@@ -17,8 +18,11 @@ export default fp(
       const driveClient = google.drive({ version: 'v3', auth });
       fastify.decorate('googleDrive', { drive: driveClient });
     } catch (err) {
-      console.error('Google Drive 플러그인 초기화 에러:', err);
-      throw err;
+      fastify.log.error('Google Drive 플러그인 초기화 에러:', err);
+      throw new GlobalException(
+        GlobalErrorCode.API_GOOGLE_ERROR,
+        err instanceof Error ? err.message : String(err),
+      );
     }
   },
   {
