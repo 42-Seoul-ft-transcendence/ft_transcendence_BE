@@ -1,7 +1,8 @@
 import { FastifyPluginAsync } from 'fastify';
 import {
   getUserMatchHistorySchema,
-  getUserSchema, getUsersSchema,
+  getUserSchema,
+  getUsersSchema,
   updateUserNameSchema,
   uploadImageSchema,
 } from '../../schemas/user/userSchema';
