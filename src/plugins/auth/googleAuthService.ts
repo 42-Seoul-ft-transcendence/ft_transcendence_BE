@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import fetch from 'node-fetch';
-import { GOOGLE_USERINFO_URL } from '../../global/config';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { GoogleUserInfo } from '../../types/auth';
+import { GOOGLE_USERINFO_URL } from '../../global/config/index.js';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
+import { GoogleUserInfo } from '../../types/auth.js';
 
 export default fp(async (fastify) => {
   fastify.decorate('googleAuthService', {

@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
-import { ADMIN_PASSWORD } from '../../global/config';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
+import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.js';
+import { ADMIN_PASSWORD } from '../../global/config/index.js';
 
 export default fp(
   async (fastify: FastifyInstance) => {

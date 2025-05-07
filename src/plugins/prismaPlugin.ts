@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import prisma from '../global/db/prisma';
+import prisma from '../global/db/prisma.js';
 import { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 

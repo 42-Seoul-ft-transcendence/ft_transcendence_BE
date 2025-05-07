@@ -2,8 +2,8 @@ import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { MultipartFile } from '@fastify/multipart';
 import { v4 as uuidv4 } from 'uuid';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { GDRIVE_FOLDER_ID } from '../../global/config';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
+import { GDRIVE_FOLDER_ID } from '../../global/config/index.js';
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorate('userService', {

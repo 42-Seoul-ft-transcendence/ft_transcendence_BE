@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-import { generateAdminTokenSchema, getUsersSchema } from '../schemas/adminSchema';
-import { getMatchesSchema } from '../schemas/adminSchema';
+import { generateAdminTokenSchema, getUsersSchema } from '../schemas/adminSchema.js';
+import { getMatchesSchema } from '../schemas/adminSchema.js';
 
 const adminRoute: FastifyPluginAsync = async (fastify) => {
   // 어드민 토큰 생성 엔드포인트 (테스트용)

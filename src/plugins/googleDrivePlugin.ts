@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { google } from 'googleapis';
-import { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY } from '../global/config';
-import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException';
+import { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY } from '../global/config/index.js';
+import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException.js';
 
 export default fp(
   async (fastify: FastifyInstance) => {
