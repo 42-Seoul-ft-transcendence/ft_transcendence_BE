@@ -87,6 +87,10 @@ export default fp(async (fastify: FastifyInstance) => {
               id: true,
               name: true,
               image: true,
+              updatedAt: true,
+            },
+            orderBy: {
+              updatedAt: 'asc',
             },
           },
           matches: {
