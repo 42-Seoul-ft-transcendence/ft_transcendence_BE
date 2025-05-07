@@ -40,6 +40,7 @@ declare module 'fastify' {
       updatePlayerStats(winnerId: number, loserId: number): Promise<void>;
       broadcastGameState(matchId: number): void;
       broadcastToMatch(matchId: number, message: any): void;
+      setupMatchConnectionTimeout(matchId: number): Promise<void>; // 새 메서드 추가
     };
 
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
