@@ -393,6 +393,9 @@ export default fp(async (fastify: FastifyInstance) => {
       gameState.pauseEndTime = Date.now() + 500; // 0.5초 후 재개
     },
 
+    // src/plugins/tournament/gameService.ts
+    // Update the endGame method to set up timeout for the final match in 4P tournaments
+
     /**
      * 게임 종료 처리
      */
@@ -483,6 +486,9 @@ export default fp(async (fastify: FastifyInstance) => {
             });
 
             console.log(`라운드 2 결승전 매치 생성됨: ${finalMatch.id}`);
+
+            // 결승전 매치 연결 타임아웃 설정
+            await fastify.gameService.setupMatchConnectionTimeout(finalMatch.id);
           }
         } else if (match.round === 2) {
           // 결승전이 종료되면 토너먼트 상태를 COMPLETED로 변경
@@ -606,6 +612,82 @@ export default fp(async (fastify: FastifyInstance) => {
           ws.send(JSON.stringify(message));
         }
       });
+    },
+
+    /**
+     * 매치 연결 타임아웃 설정
+     */
+    async setupMatchConnectionTimeout(matchId: number): Promise<void> {
+      console.log(`매치 ${matchId}의 연결 타임아웃 설정 (10초)`);
+
+      // 10초 후에 실행될 타임아웃
+      setTimeout(async () => {
+        // 매치 정보 가져오기
+        const match = await prisma.match.findUnique({
+          where: { id: matchId },
+          include: {
+            matchUsers: true,
+          },
+        });
+
+        if (!match || match.status === 'COMPLETED') {
+          return; // 이미 완료된 매치는 무시
+        }
+
+        // 인증된 플레이어 목록 확인
+        const authenticated = fastify.playerAuthenticated.get(matchId) || new Set();
+        console.log(`매치 ${matchId} 타임아웃 체크: 연결된 플레이어 ${authenticated.size}명`);
+
+        // 연결된 플레이어가 없는 경우
+        if (authenticated.size === 0) {
+          console.log(`매치 ${matchId}: 양쪽 플레이어 모두 연결되지 않음, 랜덤 승자 결정`);
+
+          // 랜덤으로 승자 선택
+          const randomWinnerIndex = Math.floor(Math.random() * match.matchUsers.length);
+          const winnerId = match.matchUsers[randomWinnerIndex].userId;
+
+          // 게임 상태 초기화 (아직 초기화되지 않은 경우)
+          if (!fastify.matchStates.has(matchId)) {
+            await fastify.gameService.initGameState(matchId);
+          }
+
+          // 승자 설정 및 게임 종료
+          const gameState = fastify.matchStates.get(matchId)!;
+          gameState.isGameOver = true;
+          gameState.winner = winnerId;
+          gameState.disconnected = true;
+
+          // 플레이어 연결 맵 초기화
+          if (!fastify.matchSockets.has(matchId)) {
+            fastify.matchSockets.set(matchId, new Map());
+          }
+
+          // 게임 종료 처리
+          await fastify.gameService.endGame(matchId);
+        }
+        // 한 명만 연결된 경우
+        else if (authenticated.size === 1) {
+          console.log(`매치 ${matchId}: 한 명만 연결됨, 연결된 플레이어 승리`);
+
+          // 연결된 플레이어를 승자로 설정
+          const connectedPlayerId = Array.from(authenticated)[0];
+
+          // 게임 상태 초기화 (아직 초기화되지 않은 경우)
+          if (!fastify.matchStates.has(matchId)) {
+            await fastify.gameService.initGameState(matchId);
+          }
+
+          // 승자 설정 및 게임 종료
+          const gameState = fastify.matchStates.get(matchId)!;
+          gameState.isGameOver = true;
+          gameState.winner = connectedPlayerId;
+          gameState.disconnected = true;
+
+          // 게임 종료 처리
+          await fastify.gameService.endGame(matchId);
+        }
+        // 양쪽 다 연결된 경우는 정상 진행
+      }, 10000); // 10초 타임아웃
     },
   });
 });
