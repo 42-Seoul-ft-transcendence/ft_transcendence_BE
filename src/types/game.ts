@@ -24,6 +24,8 @@ export interface GameState {
   isGameOver: boolean;
   winner?: number;
   disconnected?: boolean;
+  isPaused: boolean;
+  pauseEndTime?: number;
 }
 
 // 게임 설정 상수

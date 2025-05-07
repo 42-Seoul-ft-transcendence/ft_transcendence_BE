@@ -163,6 +163,7 @@ export default fp(async (fastify: FastifyInstance) => {
           velocityY: 5,
         },
         isGameOver: false,
+        isPaused: false,
       };
 
       fastify.matchStates.set(matchId, gameState);
@@ -219,6 +220,11 @@ export default fp(async (fastify: FastifyInstance) => {
       const gameState = fastify.matchStates.get(matchId);
       if (!gameState) return;
 
+      // 일시정지 상태 체크 및 처리
+      if (fastify.gameService.checkPauseState(matchId, gameState)) {
+        return; // 일시정지 중이면 여기서 종료
+      }
+
       // 패들 이동 업데이트
       fastify.gameService.updatePaddles(matchId, gameState);
 
@@ -233,6 +239,32 @@ export default fp(async (fastify: FastifyInstance) => {
 
       // 게임 상태 업데이트 메시지 브로드캐스트
       fastify.gameService.broadcastGameState(matchId);
+    },
+
+    /**
+     * 일시정지 상태 확인 및 처리
+     */
+    checkPauseState(matchId: number, gameState: GameState): boolean {
+      if (gameState.isPaused) {
+        // 일시정지 시간이 지났는지 확인
+        if (gameState.pauseEndTime && Date.now() >= gameState.pauseEndTime) {
+          // 일시정지 해제
+          gameState.isPaused = false;
+          delete gameState.pauseEndTime;
+
+          // 공 속도 재설정
+          const directionX = Math.random() > 0.5 ? 5 : -5;
+          gameState.ball.velocityX = directionX;
+          gameState.ball.velocityY = Math.random() * 10 - 5;
+        }
+
+        // 일시정지 중에는 공 움직임 업데이트하지 않음
+        // 하지만 게임 상태는 계속 브로드캐스트
+        fastify.gameService.broadcastGameState(matchId);
+        return true; // 일시정지 중임을 반환
+      }
+
+      return false; // 일시정지 중이 아님
     },
 
     /**
@@ -356,6 +388,9 @@ export default fp(async (fastify: FastifyInstance) => {
       gameState.ball.y = CANVAS_HEIGHT / 2;
       gameState.ball.velocityX = -gameState.ball.velocityX;
       gameState.ball.velocityY = Math.random() * 10 - 5;
+
+      gameState.isPaused = true;
+      gameState.pauseEndTime = Date.now() + 500; // 0.5초 후 재개
     },
 
     /**

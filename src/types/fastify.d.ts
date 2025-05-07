@@ -28,6 +28,7 @@ declare module 'fastify' {
       initGameState(matchId: number): Promise<void>;
       startMatch(matchId: number): Promise<void>;
       updateGameLoop(matchId: number): void;
+      checkPauseState(matchId: number, gameState: GameState): boolean;
       updatePaddles(matchId: number, gameState: GameState): void;
       updateBallPosition(gameState: GameState): void;
       checkPaddleCollisions(gameState: GameState): void;
