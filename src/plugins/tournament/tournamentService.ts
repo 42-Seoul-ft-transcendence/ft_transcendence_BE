@@ -226,6 +226,10 @@ export default fp(async (fastify: FastifyInstance) => {
           data: { status: 'IN_PROGRESS' },
         });
 
+        const shuffledParticipants = [...updatedTournament.participants].sort(
+          () => Math.random() - 0.5,
+        );
+
         // 2P 토너먼트인 경우 매치 1개 생성
         if (tournament.type === '2P') {
           await fastify.prisma.match.create({
@@ -234,7 +238,7 @@ export default fp(async (fastify: FastifyInstance) => {
               round: 1,
               status: 'PENDING',
               matchUsers: {
-                create: updatedTournament.participants.map((participant) => ({
+                create: shuffledParticipants.map((participant) => ({
                   userId: participant.id,
                   score: 0,
                   isWinner: false,
@@ -254,12 +258,12 @@ export default fp(async (fastify: FastifyInstance) => {
               matchUsers: {
                 create: [
                   {
-                    userId: updatedTournament.participants[0].id,
+                    userId: shuffledParticipants[0].id,
                     score: 0,
                     isWinner: false,
                   },
                   {
-                    userId: updatedTournament.participants[1].id,
+                    userId: shuffledParticipants[1].id,
                     score: 0,
                     isWinner: false,
                   },
@@ -277,12 +281,12 @@ export default fp(async (fastify: FastifyInstance) => {
               matchUsers: {
                 create: [
                   {
-                    userId: updatedTournament.participants[2].id,
+                    userId: shuffledParticipants[2].id,
                     score: 0,
                     isWinner: false,
                   },
                   {
-                    userId: updatedTournament.participants[3].id,
+                    userId: shuffledParticipants[3].id,
                     score: 0,
                     isWinner: false,
                   },
