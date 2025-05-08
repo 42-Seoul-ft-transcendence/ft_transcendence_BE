@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_EXPIRES_IN, JWT_SECRET, REFRESH_TOKEN_EXPIRES_IN } from '../global/config';
-import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException';
+import {
+  ACCESS_TOKEN_EXPIRES_IN,
+  JWT_SECRET,
+  REFRESH_TOKEN_EXPIRES_IN,
+} from '../global/config/index.js';
+import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException.js';
 
 interface JwtPayload {
   userId: number;

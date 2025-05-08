@@ -1,6 +1,6 @@
 // src/routes/tournament/match.ts
 import { FastifyInstance } from 'fastify';
-import { verifyToken } from '../../utils/jwt';
+import { verifyToken } from '../../utils/jwt.js';
 
 export default async function matchRoutes(fastify: FastifyInstance) {
   // WebSocket 연결 설정

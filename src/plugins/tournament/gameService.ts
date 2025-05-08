@@ -1,8 +1,8 @@
 // src/plugins/tournament/gameService.ts
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { GAME_CONSTANTS, GameState, PaddleDirection } from '../../types/game';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
+import { GAME_CONSTANTS, GameState, PaddleDirection } from '../../types/game.js';
 
 // 게임 상수 불러오기
 const { WIN_SCORE, PADDLE_HEIGHT, PADDLE_SPEED, CANVAS_HEIGHT, CANVAS_WIDTH, BALL_RADIUS } =

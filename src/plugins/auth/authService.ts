@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt.js';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorate('authService', {

@@ -1,10 +1,10 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { generateTwoFactorSecret, verifyTwoFactorToken } from '../../utils/twoFactorAuth';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
-import { decrypt, encrypt } from '../../utils/encryption';
+import { generateTwoFactorSecret, verifyTwoFactorToken } from '../../utils/twoFactorAuth.js';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
+import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.js';
+import { decrypt, encrypt } from '../../utils/encryption.js';
 
 interface TwoFactorSetupResponse {
   secret: string;

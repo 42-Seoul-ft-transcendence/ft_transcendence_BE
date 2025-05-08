@@ -5,7 +5,7 @@ import {
   getTournamentSchema,
   joinTournamentSchema,
   leaveTournamentSchema,
-} from '../../schemas/tournament/tournamentSchema';
+} from '../../schemas/tournament/tournamentSchema.js';
 
 const tournamentRoute: FastifyPluginAsync = async (fastify) => {
   // 토너먼트 목록 조회

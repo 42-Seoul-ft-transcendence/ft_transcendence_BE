@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
 
 export default fp(
   async (fastify: FastifyInstance) => {

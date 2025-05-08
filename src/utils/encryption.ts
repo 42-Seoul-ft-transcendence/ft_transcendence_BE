@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-import { ENCRYPTION_KEY } from '../global/config';
+import { ENCRYPTION_KEY } from '../global/config/index.js';
 
 /**
  * 데이터를 암호화합니다.

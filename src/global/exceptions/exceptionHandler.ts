@@ -1,5 +1,5 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
-import { ErrorDef, ErrorResponse, GlobalErrorCode, GlobalException } from './globalException';
+import { ErrorDef, ErrorResponse, GlobalErrorCode, GlobalException } from './globalException.js';
 
 // Fastify 유효성 검사 오류를 위한 확장 인터페이스
 interface ValidationError extends Error {
