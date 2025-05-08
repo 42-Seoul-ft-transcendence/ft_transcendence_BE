@@ -1,10 +1,10 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException';
+import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException.js';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'node:path';
-import { AWS_REGION, AWS_S3_BUCKET_NAME } from '../global/config';
+import { AWS_REGION, AWS_S3_BUCKET_NAME } from '../global/config/index.js';
 import { MultipartFile } from '@fastify/multipart';
 
 export default fp(async (fastify: FastifyInstance) => {

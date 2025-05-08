@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { S3Client } from '@aws-sdk/client-s3';
-import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException';
-import { AWS_REGION, AWS_S3_ACCESS, AWS_S3_SECRET } from '../global/config';
+import { GlobalException, GlobalErrorCode } from '../global/exceptions/globalException.js';
+import { AWS_REGION, AWS_S3_ACCESS, AWS_S3_SECRET } from '../global/config/index.js';
 
 export default fp(
   async (fastify: FastifyInstance) => {
