@@ -54,20 +54,15 @@ const userRoute: FastifyPluginAsync = async (fastify) => {
       preHandler: fastify.authenticate,
     },
     async (request, reply) => {
-      try {
-        const userId = request.user.id;
-        const body = request.body as { image: MultipartFile | MultipartFile[] };
-        const data = Array.isArray(body.image) ? body.image[0] : body.image;
-        if (!data) {
-          throw new GlobalException(GlobalErrorCode.FILE_NOT_UPLOADED);
-        }
-        // 유저 서비스에 위임
-        const result = await fastify.userService.uploadUserImage(userId, data);
-        return reply.send({ image: result.image });
-      } catch (error) {
-        if (error instanceof GlobalException) throw error;
-        throw new GlobalException(GlobalErrorCode.UNKNOWN_ERROR);
+      const userId = request.user.id;
+      const body = request.body as { image: MultipartFile | MultipartFile[] };
+      const data = Array.isArray(body.image) ? body.image[0] : body.image;
+      if (!data) {
+        throw new GlobalException(GlobalErrorCode.FILE_NOT_UPLOADED);
       }
+      // 유저 서비스에 위임
+      const result = await fastify.userService.uploadUserImage(userId, data);
+      return reply.send({ image: result.image });
     },
   );
 

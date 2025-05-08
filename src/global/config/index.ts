@@ -17,3 +17,9 @@ export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD as string;
 export const GDRIVE_FOLDER_ID = process.env.GDRIVE_FOLDER_ID as string;
 export const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL as string;
 export const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY as string;
+
+// AWS S3 환경 변수 추가
+export const AWS_REGION = 'ap-northeast-2';
+export const AWS_S3_ACCESS = process.env.AWS_S3_ACCESS as string;
+export const AWS_S3_SECRET = process.env.AWS_S3_SECRET as string;
+export const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME as string;
