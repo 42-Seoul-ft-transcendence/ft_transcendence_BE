@@ -2,6 +2,7 @@ import 'fastify';
 import { GoogleUserInfo } from './auth';
 import { drive_v3 } from '@googleapis/drive';
 import { GameState, PaddleDirection } from './game';
+
 type DriveClient = ReturnType<typeof google.drive>;
 
 declare module 'fastify' {
@@ -187,5 +188,20 @@ declare module 'fastify' {
     };
 
     googleDrive: drive_v3.Drive;
+
+    awsS3: {
+      s3: S3Client;
+    };
+
+    awsS3Service: {
+      uploadFile(
+        fileName: string,
+        buffer: Buffer,
+        mimeType: string,
+        folder?: string,
+      ): Promise<string>;
+
+      uploadUserImage(userId: number, file: MultipartFile): Promise<string>;
+    };
   }
 }

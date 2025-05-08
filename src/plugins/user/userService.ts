@@ -3,7 +3,9 @@ import { FastifyInstance } from 'fastify';
 import { MultipartFile } from '@fastify/multipart';
 import { v4 as uuidv4 } from 'uuid';
 import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
-import { GDRIVE_FOLDER_ID } from '../../global/config/index.js';
+import { AWS_REGION, AWS_S3_BUCKET_NAME, GDRIVE_FOLDER_ID } from '../../global/config/index.js';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import path from 'node:path';
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorate('userService', {
@@ -91,21 +93,10 @@ export default fp(async (fastify: FastifyInstance) => {
         throw new GlobalException(GlobalErrorCode.UNSUPPORTED_MEDIA_TYPE);
       }
 
-      // 2) 버퍼 생성 및 이름 결정
-      const buffer = await file.toBuffer();
-      const filename = `${uuidv4()}_${file.filename}`;
-      const folderId = GDRIVE_FOLDER_ID ?? '';
+      // 2) S3 서비스를 사용하여 이미지 업로드
+      const imageUrl = await fastify.awsS3Service.uploadUserImage(userId, file);
 
-      // 3) Google Drive에 업로드
-      const fileId = await fastify.googleDriveService.uploadFile(
-        filename,
-        buffer,
-        file.mimetype,
-        folderId,
-      );
-      const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
-
-      // 4) DB에 이미지 URL 저장
+      // 3) DB에 이미지 URL 저장
       await fastify.prisma.user.update({
         where: { id: userId },
         data: { image: imageUrl },

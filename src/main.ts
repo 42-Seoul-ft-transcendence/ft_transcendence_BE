@@ -27,6 +27,8 @@ import multipart from '@fastify/multipart';
 import { ajvFilePlugin } from '@fastify/multipart';
 import { exceptionHandler } from './global/exceptions/exceptionHandler.js';
 import { GameState, PaddleDirection } from './types/game.js';
+import awsS3Service from './plugins/awsS3Service.js';
+import awsS3Plugin from './plugins/awsS3Plugin.js';
 
 const fastify = Fastify({
   // logger: true,
@@ -64,6 +66,9 @@ await fastify.register(multipart, {
 });
 await fastify.register(googleDrivePlugin);
 await fastify.register(googleDriveService);
+
+await fastify.register(awsS3Plugin);
+await fastify.register(awsS3Service);
 
 // User/Friend/Admin 서비스
 await fastify.register(userService);

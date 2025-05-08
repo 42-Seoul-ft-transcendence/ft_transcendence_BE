@@ -68,6 +68,8 @@ export enum GlobalErrorCode {
   SERVER_INTERNAL_ERROR = 'SERVER_001',
   SERVER_DATABASE_ERROR = 'SERVER_002',
 
+  BAD_REQUEST = 'BAD_REQUEST',
+
   // 유효성 검사 관련 에러
   VALIDATION_ERROR = 'VAL_001',
 
@@ -301,6 +303,11 @@ export const ErrorDef: Record<GlobalErrorCode, { statusCode: number; message: st
   [GlobalErrorCode.UNKNOWN_ERROR]: {
     statusCode: 500,
     message: '알 수 없는 오류가 발생했습니다',
+  },
+
+  [GlobalErrorCode.BAD_REQUEST]: {
+    statusCode: 400,
+    message: '잘못된 요청입니다',
   },
 };
 
