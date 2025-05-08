@@ -5,7 +5,7 @@ IMAGE_NAME ?= ft_transcendence_be
 CONTAINER_NAME ?= ft_transcendence
 PORT ?= 8083
 
-all: docker-build docker-run
+all: docker-clean docker-build docker-run
 
 install:
 	@echo "==> npm 패키지 설치 중..."
