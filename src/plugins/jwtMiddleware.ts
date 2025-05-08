@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
 import { FastifyPluginCallback, FastifyRequest } from 'fastify';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { JWT_SECRET } from '../global/config';
-import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException';
+import { JWT_SECRET } from '../global/config/index.js';
+import { GlobalErrorCode, GlobalException } from '../global/exceptions/globalException.js';
 
 const jwtMiddleware: FastifyPluginCallback = (fastify, _options, done) => {
   // request.user 라는 프로퍼티를 추가해줍니다.

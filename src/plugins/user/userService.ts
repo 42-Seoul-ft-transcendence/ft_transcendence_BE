@@ -2,8 +2,8 @@ import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { MultipartFile } from '@fastify/multipart';
 import { v4 as uuidv4 } from 'uuid';
-import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException';
-import { AWS_REGION, AWS_S3_BUCKET_NAME, GDRIVE_FOLDER_ID } from '../../global/config';
+import { GlobalErrorCode, GlobalException } from '../../global/exceptions/globalException.js';
+import { AWS_REGION, AWS_S3_BUCKET_NAME, GDRIVE_FOLDER_ID } from '../../global/config/index.js';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import path from 'node:path';
 

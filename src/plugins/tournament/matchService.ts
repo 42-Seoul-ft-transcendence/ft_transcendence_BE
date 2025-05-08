@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { GlobalException, GlobalErrorCode } from '../../global/exceptions/globalException';
+import { GlobalException, GlobalErrorCode } from '../../global/exceptions/globalException.js';
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorate('matchService', {

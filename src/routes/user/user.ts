@@ -5,10 +5,10 @@ import {
   getUsersSchema,
   updateUserNameSchema,
   uploadImageSchema,
-} from '../../schemas/user/userSchema';
+} from '../../schemas/user/userSchema.js';
 import { MultipartFile } from '@fastify/multipart';
-import { GlobalException } from '../../global/exceptions/globalException';
-import { GlobalErrorCode } from '../../global/exceptions/globalException';
+import { GlobalException } from '../../global/exceptions/globalException.js';
+import { GlobalErrorCode } from '../../global/exceptions/globalException.js';
 
 const userRoute: FastifyPluginAsync = async (fastify) => {
   // 현재 로그인한 사용자 정보 조회

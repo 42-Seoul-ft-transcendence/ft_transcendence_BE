@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { GlobalException, GlobalErrorCode } from '../../global/exceptions/globalException';
+import { GlobalException, GlobalErrorCode } from '../../global/exceptions/globalException.js';
 
 export default fp(async (fastify: FastifyInstance) => {
   fastify.decorate('tournamentService', {
@@ -232,7 +232,7 @@ export default fp(async (fastify: FastifyInstance) => {
 
         // 2P 토너먼트인 경우 매치 1개 생성
         if (tournament.type === '2P') {
-          await fastify.prisma.match.create({
+          const match = await fastify.prisma.match.create({
             data: {
               tournamentId,
               round: 1,
@@ -246,11 +246,12 @@ export default fp(async (fastify: FastifyInstance) => {
               },
             },
           });
+          await fastify.gameService.setupMatchConnectionTimeout(match.id);
         }
         // 4P 토너먼트인 경우 예선 매치 2개 생성
         else if (tournament.type === '4P') {
           // 첫 번째 예선 매치 (참가자 1, 2)
-          await fastify.prisma.match.create({
+          const match1 = await fastify.prisma.match.create({
             data: {
               tournamentId,
               round: 1,
@@ -273,7 +274,7 @@ export default fp(async (fastify: FastifyInstance) => {
           });
 
           // 두 번째 예선 매치 (참가자 3, 4)
-          await fastify.prisma.match.create({
+          const match2 = await fastify.prisma.match.create({
             data: {
               tournamentId,
               round: 1,
@@ -294,6 +295,9 @@ export default fp(async (fastify: FastifyInstance) => {
               },
             },
           });
+
+          await fastify.gameService.setupMatchConnectionTimeout(match1.id);
+          await fastify.gameService.setupMatchConnectionTimeout(match2.id);
         }
       }
     },
