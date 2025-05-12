@@ -227,13 +227,12 @@ export default fp(
                 id: true,
                 name: true,
                 image: true,
-                isOnline: true,
                 lastSeen: true,
               },
             },
           },
           take: limit,
-          orderBy: { friend: { name: 'asc' } },
+          orderBy: { friend: { lastSeen: 'asc' } },
         });
 
         // 총 친구 수 조회

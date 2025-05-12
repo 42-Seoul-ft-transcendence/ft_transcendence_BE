@@ -84,7 +84,6 @@ export const getFriendsSchema = {
               id: { type: 'number' },
               name: { type: 'string' },
               image: { type: 'string', nullable: true },
-              isOnline: { type: 'boolean' },
               lastSeen: { type: 'string', format: 'date-time' },
             },
           },
